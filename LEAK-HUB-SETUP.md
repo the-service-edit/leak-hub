@@ -1,11 +1,11 @@
-# Leak Hub — phone sync setup
+# Leak Hub: phone sync setup
 
 One-time setup to make `leak-hub.html` sync between your laptop and phone.
 About 20 minutes. Steps marked **[you]** only you can do (they need your logins).
 
 The model in one line: the hub file lives on the web (Vercel), your typed content
 lives in a private Supabase database, and row-level security means the database
-will only ever hand your data to *you* — logged in with your email + password.
+will only ever hand your data to *you*, logged in with your email + password.
 
 ---
 
@@ -56,7 +56,7 @@ Left sidebar → **Project Settings** → **API**. Copy:
 - **Project URL** → looks like `https://abcdxyz.supabase.co`
 - **anon public** key → a long string starting `eyJ...`
 
-(The anon key is *designed* to be public — the security lives in the RLS policies
+(The anon key is *designed* to be public. The security lives in the RLS policies
 above, not in hiding the key.)
 
 ## 5. Paste the keys into the hub
@@ -77,7 +77,7 @@ Save the file. (Tell me the two values and I'll paste them in for you if you'd r
 
 Two options:
 
-**A. Simplest — served by your existing site.**
+**A. Simplest, served by your existing site.**
 Move the file into the app's `public/` folder and push:
 
 ```
@@ -99,7 +99,7 @@ On your phone, open the hub URL in Safari (iPhone) or Chrome (Android):
 - **Android:** ⋮ menu → **Add to Home screen**
 
 Sign in once with the email + password from step 3. It stays signed in and now
-looks and opens like an app. Do the same on your laptop. Edit on either — it
+looks and opens like an app. Do the same on your laptop. Edit on either, and it
 syncs through Supabase within a second.
 
 ---
@@ -107,11 +107,11 @@ syncs through Supabase within a second.
 ## How it behaves
 
 - **Offline / no signal:** keeps working, saves locally, syncs when you're back.
-  The sidebar shows the status: *Synced*, *Saving…*, or *Offline — saved locally*.
+  The sidebar shows the status: *Synced*, *Saving…*, or *Offline (saved locally)*.
 - **Two devices at once:** last save wins. As a solo user you'll rarely hit this,
   but don't edit the same field on both phones simultaneously and expect a merge.
 - **Before you finish setup:** the hub still works fully as a local file on one
-  device — it just won't sync. Nothing is lost when you switch sync on; your local
+  device. It just won't sync. Nothing is lost when you switch sync on; your local
   content is pushed up the first time you sign in.
 - **Backups:** the **Export backup** link still works and gives you a JSON copy
   anytime. Cheap insurance.

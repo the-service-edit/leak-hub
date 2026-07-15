@@ -155,7 +155,7 @@
     .concept-wrap h3,.concept-wrap{color:var(--ink) !important}
     .concept-input{background:#fff !important;border:1px solid #ddd9d3 !important;color:var(--ink) !important;font-size:16px !important}
     .rt,input[type=text]{border:0 !important;box-shadow:none !important;background:transparent !important;padding:2px 0 !important}
-    .rt:empty:before{content:"—" !important;color:#bbb !important}
+    .rt:empty:before{content:"" !important;color:#bbb !important}
     input[type=text]::placeholder{color:transparent}
     .rt mark,mark,.rt span[style*=background]{background:#ffe08a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .card h3 .dot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -164,7 +164,7 @@
 </head>
 <body>
 <!-- ============================================================
-     CONFIG — paste your SEPARATE Supabase project's values here.
+     CONFIG: paste your SEPARATE Supabase project's values here.
      Until you do, the hub runs in local-only mode (this device).
      The anon key is safe to expose publicly; row-level security
      protects your data. See LEAK-HUB-SETUP.md.
@@ -222,15 +222,15 @@ const SEED={view:'goals',
   concept:{oneliner:'',plain:'',problem:'',forIdeal:'',forNot:'',why:'',north:''},
   goals:{d30:'',d90:'',y1:''},
   audit:{
-    oneline:"A one-off, 13-week profit-leak audit of a café's own numbers — surfacing the money leaking between the lines of the P&L, and exactly what to do about it.",
-    inputs:"The three files every café already has — POS sales, the wages/payroll export, and supplier invoices. A 13-week (one quarter) lookback: long enough to set the café's own baseline and catch drift, short enough that pulling the files isn't a chore.",
-    hunts:"Leaks that never show on a monthly P&L, each measured against the café's OWN history, not industry benchmarks:<br>• Labour vs actual trade by day — rostering gaps and sales per labour hour<br>• Supplier price creep — invoice prices vs that supplier's own trailing average<br>• COGS / food-cost drift — spend moving off the café's rolling normal",
-    outscope:"Not included: stocktake or inventory counting, full menu re-engineering, on-site visits, and any bookkeeping, BAS or tax work. Leak finds the operational leaks between the P&L lines — it complements the accountant, it doesn't replace them.",
-    deliverable:"The branded Profit Leak Audit PDF: a one-line headline dollar figure, an opportunity score out of 100, and three priority findings — each with what we saw, what to do, and the annual $ value — with the working shown and every number traceable to their own data.",
-    call:"Not a live call — a short pre-recorded Loom walkthrough of the findings, sent with the report. The owner watches it whenever suits them; nothing to book, nothing to schedule. That convenience IS part of the pitch: we work around your schedule, not the other way around — booking a meeting is exactly the friction a busy operator doesn't need. Bonus: async means no scheduling bottleneck, so it scales past the founding clients.",
+    oneline:"A one-off, 13-week profit-leak audit of a café's own numbers, surfacing every dollar leaking between the lines of the P&L, and exactly what to do about it.",
+    inputs:"The three files every café already has: POS sales, the wages/payroll export, and supplier invoices. A 13-week (one quarter) lookback: long enough to set the café's own baseline and catch drift, short enough that pulling the files isn't a chore.",
+    hunts:"Leaks that never show on a monthly P&L, each measured against the café's OWN history, not industry benchmarks:<br>• Labour vs actual trade by day: rostering gaps and sales per labour hour<br>• Supplier price creep: invoice prices vs that supplier's own trailing average<br>• COGS / food-cost drift: spend moving off the café's rolling normal",
+    outscope:"Not included: stocktake or inventory counting, full menu re-engineering, on-site visits, and any bookkeeping, BAS or tax work. Leak finds the operational leaks between the P&L lines. It complements the accountant, it doesn't replace them.",
+    deliverable:"The branded Profit Leak Audit PDF. Leak checks every dollar across labour, suppliers and COGS and surfaces every leak it finds, not a hand-picked few. The report opens with the total annual amount leaking and an opportunity score out of 100, then lists every finding ranked biggest-dollar first (each with what we saw, what to do, and the annual $ value), with the working shown and every number traceable to their own data. The top few are flagged as priorities so the owner knows where to start, but nothing is left out.",
+    call:"Not a live call. Instead, a short pre-recorded Loom walkthrough of the findings, sent with the report. The owner watches it whenever suits them; nothing to book, nothing to schedule. That convenience IS part of the pitch: we work around your schedule, not the other way around. Booking a meeting is exactly the friction a busy operator doesn't need. Bonus: async means no scheduling bottleneck, so it scales past the founding clients.",
     turnaround:"5 business days",
-    clock:"When all three files are received — not at purchase",
-    decisions:"LOCKED — 13-week lookback · async Loom walkthrough (no live calls) · 5 business days from the day all files are received."
+    clock:"When all three files are received, not at purchase",
+    decisions:"LOCKED: 13-week lookback · async Loom walkthrough (no live calls) · 5 business days from the day all files are received."
   }};
 let S=loadLocal();
 
@@ -272,7 +272,7 @@ async function onSignedIn(){
     if(data && data.data){ S=Object.assign(clone(SEED),data.data); saveLocal(); render(); }
     else { await pushCloud(); } // migrate current local data up on first sign-in
     setSync('ok','Synced',email);
-  }catch(e){ setSync('off','Offline — local only',email); }
+  }catch(e){ setSync('off','Offline (local only)',email); }
 }
 
 async function doLogin(){
@@ -303,7 +303,7 @@ async function pushCloud(){
     const {error}=await sb.from('hub_state').upsert({user_id:session.user.id,data:S,updated_at:new Date().toISOString()});
     if(error)throw error;
     setSync('ok','Synced',email);
-  }catch(e){ setSync('off','Offline — saved locally',email); }
+  }catch(e){ setSync('off','Offline (saved locally)',email); }
 }
 
 /* one save() everywhere: local immediately, cloud debounced */
@@ -339,16 +339,16 @@ function vGoals(){
   <div class="body">
     <div class="print-only print-head"><span class="ph-brand">Leak · business hub</span><span class="ph-date">Prepared ${new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</span></div>
     <div class="concept-wrap"><div class="kicker">The concept · one line</div>
-      <h3>If someone asked “what’s Leak?” at a business conference — this is what you’d say.</h3>
+      <h3>If someone asked “what’s Leak?” at a business conference, this is what you’d say.</h3>
       <div class="rt concept-input" contenteditable="true" data-path="concept.oneliner" data-ph="Leak is … that helps … stop …" onblur="rtSave(this)">${c.oneliner||''}</div></div>
-    <div class="card"><h3><span class="dot"></span>In plain words</h3><p class="hint">The slightly longer version — how you’d explain it to a café owner over coffee.</p>
-      <div class="field">${bind('concept.plain',c.plain,'Leak looks at a venue’s numbers and shows the owner exactly where money is quietly leaking out — then helps them plug it.',true)}</div></div>
+    <div class="card"><h3><span class="dot"></span>In plain words</h3><p class="hint">The slightly longer version, how you’d explain it to a café owner over coffee.</p>
+      <div class="field">${bind('concept.plain',c.plain,'Leak looks at a venue’s numbers and shows the owner exactly where money is quietly leaking out, then helps them plug it.',true)}</div></div>
     <div class="card"><h3><span class="dot"></span>The problem I kill</h3><p class="hint">What painful, expensive thing does Leak make disappear? Why can’t owners see it themselves?</p>
-      <div class="field">${bind('concept.problem',c.problem,'Cafés lose real money every week through waste, mispriced menus, over-ordering and labour — but it’s invisible in the day-to-day, so it never gets fixed.',true)}</div></div>
+      <div class="field">${bind('concept.problem',c.problem,'Cafés lose real money every week through waste, mispriced menus, over-ordering and labour, but it’s invisible in the day-to-day, so it never gets fixed.',true)}</div></div>
     <div class="card"><h3><span class="dot"></span>Who it’s for</h3><p class="hint">Get specific. The sharper the “who”, the easier every pitch, post and price becomes.</p>
-      <div class="grid2"><div class="field"><label class="fl">Ideal client</label>${bind('concept.forIdeal',c.forIdeal,'Owner-operated cafés doing $X–$Y a week who feel busy but not profitable…',true)}</div>
+      <div class="grid2"><div class="field"><label class="fl">Ideal client</label>${bind('concept.forIdeal',c.forIdeal,'Owner-operated cafés doing $X to $Y a week who feel busy but not profitable…',true)}</div>
       <div class="field"><label class="fl">Not for</label>${bind('concept.forNot',c.forNot,'Franchises, chains, hobby cafés with no real numbers…',true)}</div></div></div>
-    <div class="card"><h3><span class="dot"></span>Why me — the unfair advantage</h3><p class="hint">What do you have that a spreadsheet or a generic consultant doesn’t?</p>
+    <div class="card"><h3><span class="dot"></span>Why me: the unfair advantage</h3><p class="hint">What do you have that a spreadsheet or a generic consultant doesn’t?</p>
       <div class="field">${bind('concept.why',c.why,'Lived the hospitality grind, know the numbers cold, and Leak turns it into something owners actually act on.',true)}</div></div>
     <div class="card"><h3><span class="dot"></span>North star</h3><p class="hint">The one number that means Leak is working. Everything points at this.</p>
       <div class="field">${bind('concept.north',c.north,'e.g. paying subscribers · dollars saved for clients / month · MRR',false)}</div></div>
@@ -365,7 +365,7 @@ function vAudit(){
   return `
   <div class="hero"><div class="hero-row">
     <div><div class="kicker">Foundation</div><h1>The Leak Audit</h1>
-    <p>Exactly what a Leak Audit is — its scope, what the client receives, and how fast. This is the definition everything downstream (pricing, the promise, the pitch) is built on.</p></div>
+    <p>Exactly what a Leak Audit is: its scope, what the client receives, and how fast. This is the definition everything downstream (pricing, the promise, the pitch) is built on.</p></div>
     <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
   </div></div>
   <div class="body">
@@ -375,7 +375,7 @@ function vAudit(){
       <h3>What a Leak Audit is, in a sentence.</h3>
       <div class="rt concept-input" contenteditable="true" data-path="audit.oneline" data-ph="A one-off, 13-week profit-leak audit of a café's own numbers…" onblur="rtSave(this)">${a.oneline||''}</div></div>
 
-    <div class="card"><h3><span class="dot"></span>Scope — what it examines</h3><p class="hint">The inputs and the window. Concrete enough to run the same way every time.</p>
+    <div class="card"><h3><span class="dot"></span>Scope: what it examines</h3><p class="hint">The inputs and the window. Concrete enough to run the same way every time.</p>
       <div class="field"><label class="fl">What we look at</label>${bind('audit.inputs',a.inputs,'The three files every café already has…',true)}</div>
       <div class="field"><label class="fl">What it hunts</label>${bind('audit.hunts',a.hunts,'Leaks invisible on the P&amp;L, measured vs the café\'s own baseline…',true)}</div>
     </div>
@@ -384,12 +384,12 @@ function vAudit(){
       <div class="field">${bind('audit.outscope',a.outscope,'Not included: stocktake, menu re-engineering, on-site visits, bookkeeping/tax…',true)}</div>
     </div>
 
-    <div class="card"><h3><span class="dot"></span>Deliverable — what they receive</h3><p class="hint">The tangible output. This is the thing worth paying for.</p>
+    <div class="card"><h3><span class="dot"></span>Deliverable: what they receive</h3><p class="hint">Every leak found, quantified and ranked. This is the thing worth paying for.</p>
       <div class="field"><label class="fl">The report</label>${bind('audit.deliverable',a.deliverable,'The branded Profit Leak Audit PDF…',true)}</div>
-      <div class="field"><label class="fl">Walkthrough — async Loom</label>${bind('audit.call',a.call,'A pre-recorded Loom of the findings — watch it whenever suits, nothing to book…',true)}</div>
+      <div class="field"><label class="fl">Walkthrough: async Loom</label>${bind('audit.call',a.call,'A pre-recorded Loom of the findings, watch it whenever suits, nothing to book…',true)}</div>
     </div>
 
-    <div class="card"><h3><span class="dot"></span>Turnaround</h3><p class="hint">The speed promise — and, just as important, when the clock starts.</p>
+    <div class="card"><h3><span class="dot"></span>Turnaround</h3><p class="hint">The speed promise, and just as important, when the clock starts.</p>
       <div class="grid2">
         <div class="field"><label class="fl">Promise</label>${bind('audit.turnaround',a.turnaround,'5 business days',false)}</div>
         <div class="field"><label class="fl">Clock starts when…</label>${bind('audit.clock',a.clock,'…all three files are received (not at purchase)',false)}</div>
@@ -403,7 +403,7 @@ function vAudit(){
 }
 
 function vSoon(n){return `<div class="hero"><div class="kicker">Next to build</div><h1>${n.label}</h1><p>We’re building this hub one page at a time so each one’s actually right. This section is next when you’re ready.</p></div>
-  <div class="body"><div class="soon-card"><div class="em">🛠️</div><h3><span class="dot"></span>${n.label} — coming next</h3><p>Say the word and we’ll design this page together, in your Leak branding, just like Goals &amp; Concepts.</p></div></div>`;}
+  <div class="body"><div class="soon-card"><div class="em">🛠️</div><h3><span class="dot"></span>${n.label}: coming next</h3><p>Say the word and we’ll design this page together, in your Leak branding, just like Goals &amp; Concepts.</p></div></div>`;}
 
 function exportData(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='leak-hub-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();}
 function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=()=>{try{S=Object.assign(clone(SEED),JSON.parse(r.result));saveLocal();render();scheduleCloud();}catch(err){alert('Could not read that file.');}};r.readAsText(f);};inp.click();}
