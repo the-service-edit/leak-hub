@@ -110,7 +110,9 @@
   .attach img{width:40px;height:54px;object-fit:cover;object-position:top center;border-radius:5px;border:1px solid var(--line)}
   .attach .an{font-size:12.5px;color:var(--ink);font-weight:700}
   .attach .as{font-size:11px;color:var(--gray-400);margin-top:1px}
-  .proofimg{display:block;max-width:360px;width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:var(--card-sh)}
+  .proofimg{display:block;max-width:520px;width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:var(--card-sh)}
+  .email-graph{padding:2px 16px 12px}
+  .email-graph img{width:100%;border-radius:10px;border:1px solid var(--line);display:block}
   @media(max-width:860px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.hero,.body{padding-left:22px;padding-right:22px}}
 
   .card{background:var(--white);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--card-sh);margin-bottom:18px;transition:box-shadow .2s}
@@ -320,9 +322,11 @@ const SEED={view:'goals',
     cadence:"A light four-touch sequence over two weeks, never pushy:<br>• Day 0: cold email, personalised first line.<br>• Day 3: Instagram follow, then a short DM referencing the email.<br>• Day 7: value follow-up, offer to send the sample audit.<br>• Day 12: one-line breakup that leaves the door open.<br><br>Stop the moment they reply. Warm and human beats frequent and robotic.",
     subjects:"Shortest and most curious usually win. Lowercase, no salesy punctuation, make it read like a note from a person:<br>• quick question about [Café]<br>• the money [Café] can't see<br>• $12k a year, most cafés never spot it<br>• found $74 a week in a café's coffee order<br>• [Name], your quietest expense",
     em1Subj:"quick question about [Café]",
-    em1Body:"Hi [Name],<br><br>Most café owners can feel money slipping somewhere, but the P&L never shows where, and by the time it lands the money is already gone.<br><br>I find exactly where. I read the three files you already have (sales, wages, supplier invoices) and hand you a plain report of every leak: the over-staffed weekend, the supplier who has crept their prices up, the food cost drifting off your own normal. Real dollars, from your own numbers, with what each one is costing you a week.<br><br>On the last café I ran it for, it was $12,400 a year they could not see. The one-page sample is attached, so you can look before you decide anything.<br><br>Founding rate is [$founding], done in 5 days, all async, no meeting to book. If I don't find at least [$floor] a year, it's free.<br><br>Want me to run [Café]'s numbers?<br><br>Mel",
+    em1Body:"Hi [Name],<br><br>Most café owners can feel money slipping somewhere, but the P&L never shows where, and by the time it lands the money is already gone.<br><br>I find exactly where. I read the three files you already have (sales, wages, supplier invoices) and hand you a plain report of every leak: the over-staffed weekend, the supplier who has crept their prices up, the food cost drifting off your own normal. Real dollars, from your own numbers, with what each one is costing you a week.<br><br>On the last café I ran it for, it was $12,400 a year they could not see. Here is where it was hiding:",
+    em1Close:"Founding rate is [$founding], done in 5 days, all async, no meeting to book. If I don't find at least [$floor] a year, it's free.<br><br>Want me to run [Café]'s numbers?<br><br>Mel",
     em2Subj:"found $74 a week in a café's coffee order",
-    em2Body:"Hi [Name],<br><br>A café near your size was quietly losing $74 a week to one supplier. Their coffee prices had crept up 8% over six months, small steps, never announced. Invisible on the P&L, obvious in the invoices.<br><br>That is one leak. Most cafés have three or four running at once, and together they usually add up to five figures a year.<br><br>I find them all from the files you already have, and show you what each one costs. The sample report is attached, so you can see exactly what you would get.<br><br>[$founding], 5 days, no meeting, and free if I don't find at least [$floor]. Want me to check [Café]?<br><br>Mel",
+    em2Body:"Hi [Name],<br><br>A café near your size was quietly losing $74 a week to one supplier. Their coffee prices had crept up 8% over six months, small steps, never announced. Invisible on the P&L, obvious in the invoices.<br><br>That is one leak. Most cafés have three or four running at once. For that café, the full picture came to $12,400 a year:",
+    em2Close:"I find them all from the files you already have, and show you what each one is costing you.<br><br>[$founding], 5 days, no meeting, and free if I don't find at least [$floor]. Want me to check [Café]?<br><br>Mel",
     dm:"Hey [Name], love what you're doing at [Café]. I build a tool that finds where cafés are quietly leaking profit, from the sales, wages and invoice files you already have. It found about $12k a year for a sample venue. I'm doing a few founding audits at [$founding]: five days, all async, no meeting. Want me to send you the sample report?",
     followup:"<b>Day 7 bump:</b> Hi [Name], bumping this in case it slipped. One line: I find the profit your café is leaking, from files you already have, or you don't pay. Want me to send a sample report?<br><br><b>Day 12 breakup:</b> No worries if the timing is off, [Name]. I'll leave it here. If you ever want to see where [Café] is leaking, the door is open. All the best.",
     objections:"<b>Too busy right now.</b> It is ten minutes to send three files you already export, and there is no meeting. I do the work, you watch a short video whenever suits.<br><br><b>I've got an accountant.</b> Perfect, this does not replace them. Your accountant shows the P&L after the money is spent. Leak catches the leaks week to week, while you can still fix them.<br><br><b>Does it work with my POS?</b> If it exports a sales CSV, yes. Same for your payroll and supplier invoices.<br><br><b>How do I know it is worth it?</b> The guarantee: if I don't find at least [$floor] a year, you don't pay. And I'll send the sample report first, so you see exactly what you get."
@@ -700,29 +704,31 @@ function vOutreach(){
     <h2 class="secttl">Email mockups</h2>
     <p class="sectsub">Plain text that sells, with one proof attachment. No inline images: they get blocked and hurt deliverability. Fill the [brackets] from your Offer page, and personalise the first line every time.</p>
 
-    <div class="card"><h3><span class="dot"></span>Your proof asset</h3><p class="hint">Attach this one-page sample to every email and DM. The number does the selling. It is the real Marlow audit result.</p>
-      <img class="proofimg" src="sample-audit-preview.jpg" alt="Leak sample audit showing $12,400 a year found">
+    <div class="card"><h3><span class="dot"></span>Your proof visual</h3><p class="hint">One graph, dropped into the email body. The numbers are the proof. Built from the real Marlow audit. Best for low-volume, hand-sent emails; for colder blasts, link to it instead.</p>
+      <img class="proofimg" src="leak-graph.png" alt="Leak graph: $12,400 a year found across three leaks">
     </div>
 
-    <div class="card"><h3><span class="dot"></span>Cold email · main angle</h3><p class="hint">Opens with their feeling, not your tool. Proof attached, hard risk reversal, one clear ask.</p>
+    <div class="card"><h3><span class="dot"></span>Cold email · main angle</h3><p class="hint">Opens with their feeling, not your tool. The graph lands the proof mid-email, then a hard risk reversal and one clear ask.</p>
       <div class="email">
         <div class="email-top">
           <div class="er"><span>To</span><b>a café owner who has never heard of you</b></div>
           <div class="er"><span>Subject</span>${bind('outreach.em1Subj',o.em1Subj,'quick question about [Café]',false)}</div>
         </div>
         <div class="email-body">${bind('outreach.em1Body',o.em1Body,'',true)}</div>
-        <div class="attach"><img src="sample-audit-preview.jpg" alt=""><div><div class="an">Leak-Sample-Audit.pdf</div><div class="as">1 page · $12,400 found</div></div></div>
+        <div class="email-graph"><img src="leak-graph.png" alt="$12,400 a year found across three leaks"></div>
+        <div class="email-body">${bind('outreach.em1Close',o.em1Close,'',true)}</div>
       </div>
     </div>
 
-    <div class="card"><h3><span class="dot"></span>Cold email · proof angle</h3><p class="hint">Opens with a concrete finding and a curiosity gap, then the offer.</p>
+    <div class="card"><h3><span class="dot"></span>Cold email · proof angle</h3><p class="hint">Opens with a concrete finding and a curiosity gap, the graph shows the full picture, then the offer.</p>
       <div class="email">
         <div class="email-top">
           <div class="er"><span>To</span><b>a café owner who has never heard of you</b></div>
           <div class="er"><span>Subject</span>${bind('outreach.em2Subj',o.em2Subj,'found $74 a week in a café\'s coffee order',false)}</div>
         </div>
         <div class="email-body">${bind('outreach.em2Body',o.em2Body,'',true)}</div>
-        <div class="attach"><img src="sample-audit-preview.jpg" alt=""><div><div class="an">Leak-Sample-Audit.pdf</div><div class="as">1 page · $12,400 found</div></div></div>
+        <div class="email-graph"><img src="leak-graph.png" alt="$12,400 a year found across three leaks"></div>
+        <div class="email-body">${bind('outreach.em2Close',o.em2Close,'',true)}</div>
       </div>
     </div>
 
