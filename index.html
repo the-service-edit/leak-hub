@@ -227,10 +227,10 @@ const SEED={view:'goals',
     hunts:"Leaks that never show on a monthly P&L, each measured against the café's OWN history, not industry benchmarks:<br>• Labour vs actual trade by day — rostering gaps and sales per labour hour<br>• Supplier price creep — invoice prices vs that supplier's own trailing average<br>• COGS / food-cost drift — spend moving off the café's rolling normal",
     outscope:"Not included: stocktake or inventory counting, full menu re-engineering, on-site visits, and any bookkeeping, BAS or tax work. Leak finds the operational leaks between the P&L lines — it complements the accountant, it doesn't replace them.",
     deliverable:"The branded Profit Leak Audit PDF: a one-line headline dollar figure, an opportunity score out of 100, and three priority findings — each with what we saw, what to do, and the annual $ value — with the working shown and every number traceable to their own data.",
-    call:"A 20-minute walkthrough call to talk through the findings and the path onto the weekly Leak subscription. The PDF is the proof; the call is where the audit becomes a paying customer.",
+    call:"Not a live call — a short pre-recorded Loom walkthrough of the findings, sent with the report. The owner watches it whenever suits them; nothing to book, nothing to schedule. That convenience IS part of the pitch: we work around your schedule, not the other way around — booking a meeting is exactly the friction a busy operator doesn't need. Bonus: async means no scheduling bottleneck, so it scales past the founding clients.",
     turnaround:"5 business days",
     clock:"When all three files are received — not at purchase",
-    decisions:"1) 13-week lookback — agree?  2) Walkthrough call included — recommend yes.  3) 5-day turnaround, or a sharper 48-hour hook if you can hold it?"
+    decisions:"LOCKED — 13-week lookback · async Loom walkthrough (no live calls) · 5 business days from the day all files are received."
   }};
 let S=loadLocal();
 
@@ -386,7 +386,7 @@ function vAudit(){
 
     <div class="card"><h3><span class="dot"></span>Deliverable — what they receive</h3><p class="hint">The tangible output. This is the thing worth paying for.</p>
       <div class="field"><label class="fl">The report</label>${bind('audit.deliverable',a.deliverable,'The branded Profit Leak Audit PDF…',true)}</div>
-      <div class="field"><label class="fl">Walkthrough call</label>${bind('audit.call',a.call,'A 20-minute call to walk the findings and the path onto the subscription…',true)}</div>
+      <div class="field"><label class="fl">Walkthrough — async Loom</label>${bind('audit.call',a.call,'A pre-recorded Loom of the findings — watch it whenever suits, nothing to book…',true)}</div>
     </div>
 
     <div class="card"><h3><span class="dot"></span>Turnaround</h3><p class="hint">The speed promise — and, just as important, when the clock starts.</p>
@@ -396,7 +396,7 @@ function vAudit(){
       </div>
     </div>
 
-    <div class="card" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 75%)"><h3><span class="dot"></span>Decisions to lock</h3><p class="hint">Nail these three and the audit is fully defined — then we move to Offer &amp; Pricing.</p>
+    <div class="card" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 75%)"><h3><span class="dot"></span>Locked in ✓</h3><p class="hint">These three are settled. Next up: Offer &amp; Pricing.</p>
       <div class="field">${bind('audit.decisions',a.decisions,'1) 13-week lookback? 2) call included? 3) 5-day vs 48-hour turnaround?',true)}</div>
     </div>
   </div>`;
