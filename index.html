@@ -82,6 +82,8 @@
   table.ct input:hover,table.ct select:hover{border-color:var(--line)}
   table.ct input:focus,table.ct select:focus{border-color:rgba(109,40,217,.4);background:var(--white);box-shadow:0 0 0 3px rgba(109,40,217,.08);outline:none}
   .emptyrow{color:var(--gray-400);text-align:center;padding:26px;font-size:13.5px}
+  .iglink{display:inline-block;color:var(--brand);font-weight:800;text-decoration:none;padding:5px 9px;border-radius:8px;font-size:14px}
+  .iglink:hover{background:var(--brand-light)}
   /* scoreboard */
   .stat{background:var(--white);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--card-sh)}
   .stat .n{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--ink)}
@@ -330,7 +332,24 @@ const SEED={view:'goals',
     dm:"Hey [Name], love what you're doing at [Café]. I build a tool that finds where cafés are quietly leaking profit, from the sales, wages and invoice files you already have. It found about $12k a year for a sample venue. I'm doing a few founding audits at [$founding]: five days, all async, no meeting. Want me to send you the sample report?",
     followup:"<b>Day 7 bump:</b> Hi [Name], bumping this in case it slipped. One line: I find the profit your café is leaking, from files you already have, or you don't pay. Want me to send a sample report?<br><br><b>Day 12 breakup:</b> No worries if the timing is off, [Name]. I'll leave it here. If you ever want to see where [Café] is leaking, the door is open. All the best.",
     objections:"<b>Too busy right now.</b> It is ten minutes to send three files you already export, and there is no meeting. I do the work, you watch a short video whenever suits.<br><br><b>I've got an accountant.</b> Perfect, this does not replace them. Your accountant shows the P&L after the money is spent. Leak catches the leaks week to week, while you can still fix them.<br><br><b>Does it work with my POS?</b> If it exports a sales CSV, yes. Same for your payroll and supplier invoices.<br><br><b>How do I know it is worth it?</b> The guarantee: if I don't find at least [$floor] a year, you don't pay. And I'll send the sample report first, so you see exactly what you get."
-  }
+  },
+  igleads:[
+    {id:uid(),handle:'regulatorhighett',comment:'I love cogs!',stage:0,notes:''},
+    {id:uid(),handle:'lelolu',comment:'COGS',stage:0,notes:''},
+    {id:uid(),handle:'cafe_navenku',comment:'COGS thanks',stage:0,notes:''},
+    {id:uid(),handle:'lobbscafe',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'drapesdeli',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'daisydayscoffee',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'explorercoffee.co',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'eyowa.cafe',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'erbario.coffee',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'coldbrewlou',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'tomntomskaty',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'littlebrickroadespresso',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'localherocoffeeroasters',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'elyshaelysha',comment:'',stage:0,notes:''},
+    {id:uid(),handle:'seline_not_selina',comment:'',stage:0,notes:''}
+  ]
   };
 let S=loadLocal();
 
@@ -416,12 +435,13 @@ const NAV=[
   {id:'offer',ic:'◈',label:'Offer & Pricing',group:'The offer'},
   {id:'plan',ic:'▤',label:'Business Plan',group:'The offer'},
   {id:'outreach',ic:'✉',label:'Cold Outreach',group:'Growth'},
+  {id:'igleads',ic:'⌾',label:'Cold Call · Instagram',group:'Growth'},
   {id:'contacts',ic:'☎',label:'Contacts',group:'Growth'},
   {id:'score',ic:'▲',label:'Scoreboard',group:'Growth'}
 ];
 function renderNav(){let html='',lastG=null;NAV.forEach(n=>{if(n.group!==lastG){html+=`<div class="navgroup">${n.group}</div>`;lastG=n.group;}html+=`<button class="${S.view===n.id?'active':''}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}</button>`;});document.getElementById('nav').innerHTML=html;}
 function go(v){S.view=v;save();render();}
-const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,outreach:vOutreach,contacts:vContacts,score:vScore};
+const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,outreach:vOutreach,igleads:vIgleads,contacts:vContacts,score:vScore};
 function render(){renderNav();const fn=VIEWS[S.view]||vGoals;document.getElementById('view').innerHTML=fn();}
 function dateStr(){return new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});}
 function num(s){return parseFloat(String(s||'').replace(/[^0-9.]/g,''))||0;}
@@ -670,6 +690,37 @@ function vScore(){
         <div class="field"><label class="fl">Start date</label><input type="date" value="${start}" onchange="S.goal.start=this.value;save();render()"></div>
       </div>
     </div>
+  </div>`;
+}
+
+/* ---------- COLD CALL · INSTAGRAM ---------- */
+const IGSTAGES=['To DM','DMd','Replied','Audit booked','Subscribed','Passed'];
+function addIg(){S.igleads.push({id:uid(),handle:'',comment:'',stage:0,notes:''});save();render();}
+function updIg(i,k,v){S.igleads[i][k]=v;save();}
+function delIg(i){S.igleads.splice(i,1);save();render();}
+function vIgleads(){
+  const C=S.igleads, n=C.length, warm=C.filter(c=>c.stage>=1&&c.stage!==5).length;
+  const rows=C.map((c,i)=>`<tr>
+      <td><input type="text" value="${esc(c.handle)}" placeholder="handle" onchange="updIg(${i},'handle',this.value)"></td>
+      <td><a class="iglink" href="https://instagram.com/${encodeURIComponent(c.handle||'')}" target="_blank" rel="noopener" title="Open profile">↗</a></td>
+      <td><input type="text" value="${esc(c.comment)}" placeholder="what they said" onchange="updIg(${i},'comment',this.value)"></td>
+      <td><select onchange="updIg(${i},'stage',+this.value);render()">${IGSTAGES.map((s,si)=>`<option value="${si}" ${c.stage==si?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td><input type="text" value="${esc(c.notes)}" placeholder="notes" onchange="updIg(${i},'notes',this.value)"></td>
+      <td><button class="btn ghost sm danger" onclick="delIg(${i})" title="Remove">×</button></td>
+    </tr>`).join('');
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Growth</div><h1>Cold Call · Instagram</h1>
+    <p>Café owners who commented on your 814-cafés / COGS reel. They raised their hand on cost of goods, the exact thing Leak fixes, so these are your warmest cold leads. ${n} pulled from the thread, ${warm} in motion. Tap the arrow to open a profile and DM.</p></div>
+    <button class="btn primary pdf-btn" onclick="addIg()">+ Add lead</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="card tablecard">
+      ${n?`<table class="ct"><thead><tr><th>Handle</th><th></th><th>Their comment</th><th>Stage</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+        :'<div class="emptyrow">No leads yet. Add café handles from the post, or ask me to pull more from the thread.</div>'}
+    </div>
+    <div class="rowbtn"><button class="btn ghost sm" onclick="addIg()">+ Add another</button></div>
   </div>`;
 }
 
