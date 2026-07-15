@@ -63,7 +63,11 @@
   .kicker{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--brand)}
   .hero h1{margin:8px 0 6px;font-size:30px;font-weight:800;letter-spacing:-.6px}
   .hero p{margin:0;color:var(--gray-600);font-size:15px;max-width:640px}
-  .body{padding:26px 44px;max-width:900px}
+  .body{padding:26px 44px;max-width:none}
+  .secttl{font-size:19px;font-weight:800;letter-spacing:-.3px;margin:28px 0 2px}
+  .sectsub{color:var(--gray-500);font-size:13.5px;margin:0 0 14px;max-width:720px}
+  .detgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:18px}
+  .detgrid .card{margin-bottom:0}
   @media(max-width:860px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.hero,.body{padding-left:22px;padding-right:22px}}
 
   .card{background:var(--white);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--card-sh);margin-bottom:18px;transition:box-shadow .2s}
@@ -225,6 +229,10 @@ const SEED={view:'goals',
     oneline:"A one-off, 13-week profit-leak audit of a café's own numbers, surfacing every dollar leaking between the lines of the P&L, and exactly what to do about it.",
     inputs:"The three files every café already has: POS sales, the wages/payroll export, and supplier invoices. A 13-week (one quarter) lookback: long enough to set the café's own baseline and catch drift, short enough that pulling the files isn't a chore.",
     hunts:"Leaks that never show on a monthly P&L, each measured against the café's OWN history, not industry benchmarks:<br>• Labour vs actual trade by day: rostering gaps and sales per labour hour<br>• Supplier price creep: invoice prices vs that supplier's own trailing average<br>• COGS / food-cost drift: spend moving off the café's rolling normal",
+    detLabour:"<b>What we check:</b> your wages, including super, against your sales week by week, measured versus your own 13-week normal rather than a generic 30% target. We flag the days you were staffed for a busier trade than actually walked in.<br><br><b>What a finding looks like:</b> your weekend was rostered for the week you hoped for. Saturdays and Sundays stayed fully staffed but traded soft after 2pm. In your worst week the gap between rostered hours and real trade was worth about $1,090. Trim the quiet hours and you hold service while closing a recurring drain.",
+    detFood:"<b>What we check:</b> your total supplier spend against your sales, tracked against your own rolling normal, so we catch food cost drifting up even when the total looks flat.<br><br><b>What a finding looks like:</b> from week 5 your food cost crept above your own normal while spend stayed level, so something in the mix shifted. The worst single week cost about $1,250. We show you the exact week it started so you can find what changed.",
+    detSupplier:"<b>What we check:</b> each supplier's invoices against that supplier's own past prices, so we flag anyone whose prices have crept up in small steps, even while your overall food cost still looks fine.<br><br><b>What a finding looks like:</b> your coffee supplier finished 8% above their own six-month average, moved in small increments, never announced. By week 13 it was costing about $74 a week. One email re-quoting it, or holding them to the old price, closes the gap.",
+    detMore:"Alongside the leaks, every audit also gives the owner three things: an opportunity score out of 100 that grades the quarter against their own baseline, not the industry; a 'worth watching' list of numbers still inside a healthy range but creeping toward a leak, so they catch them before they cost anything; and an honesty layer, where every figure is traced to their own data, carries a confidence level, and comes with a plain note of what we did not check. If a number is soft, we say so.",
     outscope:"Not included: stocktake or inventory counting, full menu re-engineering, on-site visits, and any bookkeeping, BAS or tax work. Leak finds the operational leaks between the P&L lines. It complements the accountant, it doesn't replace them.",
     deliverable:"The branded Profit Leak Audit PDF. Leak checks every dollar across labour, suppliers and COGS and surfaces every leak it finds, not a hand-picked few. The report opens with the total annual amount leaking and an opportunity score out of 100, then lists every finding ranked biggest-dollar first (each with what we saw, what to do, and the annual $ value), with the working shown and every number traceable to their own data. The top few are flagged as priorities so the owner knows where to start, but nothing is left out.",
     call:"Not a live call. Instead, a short pre-recorded Loom walkthrough of the findings, sent with the report. The owner watches it whenever suits them; nothing to book, nothing to schedule. That convenience IS part of the pitch: we work around your schedule, not the other way around. Booking a meeting is exactly the friction a busy operator doesn't need. Bonus: async means no scheduling bottleneck, so it scales past the founding clients.",
@@ -379,6 +387,15 @@ function vAudit(){
       <div class="field"><label class="fl">What we look at</label>${bind('audit.inputs',a.inputs,'The three files every café already has…',true)}</div>
       <div class="field"><label class="fl">What it hunts</label>${bind('audit.hunts',a.hunts,'Leaks invisible on the P&amp;L, measured vs the café\'s own baseline…',true)}</div>
     </div>
+
+    <h2 class="secttl">What it audits, in full</h2>
+    <p class="sectsub">Every outcome the audit checks, and what a finding looks like in the owner's own numbers. All measured across the full 13 weeks, never a single week.</p>
+    <div class="detgrid">
+      <div class="card"><h3><span class="dot"></span>Labour efficiency</h3>${bind('audit.detLabour',a.detLabour,'',true)}</div>
+      <div class="card"><h3><span class="dot"></span>Food &amp; COGS drift</h3>${bind('audit.detFood',a.detFood,'',true)}</div>
+      <div class="card"><h3><span class="dot"></span>Supplier price creep</h3>${bind('audit.detSupplier',a.detSupplier,'',true)}</div>
+    </div>
+    <div class="card"><h3><span class="dot"></span>Everything else in the report</h3>${bind('audit.detMore',a.detMore,'',true)}</div>
 
     <div class="card" style="background:linear-gradient(135deg,var(--leak-light),var(--white) 70%)"><h3><span class="dot"></span>Out of scope</h3><p class="hint">Saying what it's NOT protects your turnaround, your margins, and the accountant relationship.</p>
       <div class="field">${bind('audit.outscope',a.outscope,'Not included: stocktake, menu re-engineering, on-site visits, bookkeeping/tax…',true)}</div>
