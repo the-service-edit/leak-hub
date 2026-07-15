@@ -125,6 +125,41 @@
   .save-toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:#fff;padding:9px 16px;border-radius:11px;font-weight:600;font-size:13px;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;z-index:99;box-shadow:var(--lift-sh)}
   .save-toast.show{opacity:1;transform:translateY(0)}
   .save-toast .d{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin-right:7px}
+
+  /* Hero action row + PDF button */
+  .hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+  .pdf-btn{flex:0 0 auto;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
+
+  /* Print header (screen-hidden, shown in PDF) */
+  .print-only{display:none}
+  .print-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:18px}
+  .print-head .ph-brand{font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-size:13px}
+  .print-head .ph-date{color:var(--gray-500);font-size:12px}
+
+  /* ===== PRINT / PDF LAYOUT ===== */
+  @media print{
+    @page{margin:15mm}
+    html,body{background:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .side,.rt-toolbar,.save-toast,.pdf-btn,.no-print{display:none !important}
+    .app{display:block}
+    .main{padding:0}
+    .print-only{display:flex !important}
+    .hero{background:#fff !important;padding:0 0 10px;border-bottom:0;margin-bottom:6px}
+    .hero h1{font-size:22px;margin:2px 0}
+    .hero p{font-size:12.5px;color:var(--gray-600)}
+    .body{padding:0;max-width:none}
+    .card,.concept-wrap,.goalcard{box-shadow:none !important;border:1px solid #ddd9d3 !important;background:#fff !important;break-inside:avoid;page-break-inside:avoid;margin-bottom:12px}
+    .card{padding:14px 16px}
+    .concept-wrap{padding:16px}
+    .concept-wrap .kicker{color:var(--brand) !important}
+    .concept-wrap h3,.concept-wrap{color:var(--ink) !important}
+    .concept-input{background:#fff !important;border:1px solid #ddd9d3 !important;color:var(--ink) !important;font-size:16px !important}
+    .rt,input[type=text]{border:0 !important;box-shadow:none !important;background:transparent !important;padding:2px 0 !important}
+    .rt:empty:before{content:"—" !important;color:#bbb !important}
+    input[type=text]::placeholder{color:transparent}
+    .rt mark,mark,.rt span[style*=background]{background:#ffe08a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .card h3 .dot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
 </style>
 </head>
 <body>
@@ -280,9 +315,13 @@ function rtSave(el){const p=el.getAttribute('data-path');if(!p)return;const[a,b]
 function vGoals(){
   const c=S.concept,g=S.goals;
   return `
-  <div class="hero"><div class="kicker">Foundation</div><h1>Goals &amp; Concepts</h1>
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Foundation</div><h1>Goals &amp; Concepts</h1>
     <p>The bedrock. What Leak is, the problem it kills, who it’s for, and where you’re taking it. Everything else in this hub builds on what you decide here.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
   <div class="body">
+    <div class="print-only print-head"><span class="ph-brand">Leak · business hub</span><span class="ph-date">Prepared ${new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</span></div>
     <div class="concept-wrap"><div class="kicker">The concept · one line</div>
       <h3>If someone asked “what’s Leak?” at a business conference — this is what you’d say.</h3>
       <div class="rt concept-input" contenteditable="true" data-path="concept.oneliner" data-ph="Leak is … that helps … stop …" onblur="rtSave(this)">${c.oneliner||''}</div></div>
