@@ -218,7 +218,20 @@
 const KEY='leak_hub_v1';
 const uid=()=>Math.random().toString(36).slice(2,9);
 const clone=o=>JSON.parse(JSON.stringify(o));
-const SEED={view:'goals',concept:{oneliner:'',plain:'',problem:'',forIdeal:'',forNot:'',why:'',north:''},goals:{d30:'',d90:'',y1:''}};
+const SEED={view:'goals',
+  concept:{oneliner:'',plain:'',problem:'',forIdeal:'',forNot:'',why:'',north:''},
+  goals:{d30:'',d90:'',y1:''},
+  audit:{
+    oneline:"A one-off, 13-week profit-leak audit of a café's own numbers — surfacing the money leaking between the lines of the P&L, and exactly what to do about it.",
+    inputs:"The three files every café already has — POS sales, the wages/payroll export, and supplier invoices. A 13-week (one quarter) lookback: long enough to set the café's own baseline and catch drift, short enough that pulling the files isn't a chore.",
+    hunts:"Leaks that never show on a monthly P&L, each measured against the café's OWN history, not industry benchmarks:<br>• Labour vs actual trade by day — rostering gaps and sales per labour hour<br>• Supplier price creep — invoice prices vs that supplier's own trailing average<br>• COGS / food-cost drift — spend moving off the café's rolling normal",
+    outscope:"Not included: stocktake or inventory counting, full menu re-engineering, on-site visits, and any bookkeeping, BAS or tax work. Leak finds the operational leaks between the P&L lines — it complements the accountant, it doesn't replace them.",
+    deliverable:"The branded Profit Leak Audit PDF: a one-line headline dollar figure, an opportunity score out of 100, and three priority findings — each with what we saw, what to do, and the annual $ value — with the working shown and every number traceable to their own data.",
+    call:"A 20-minute walkthrough call to talk through the findings and the path onto the weekly Leak subscription. The PDF is the proof; the call is where the audit becomes a paying customer.",
+    turnaround:"5 business days",
+    clock:"When all three files are received — not at purchase",
+    decisions:"1) 13-week lookback — agree?  2) Walkthrough call included — recommend yes.  3) 5-day turnaround, or a sharper 48-hour hook if you can hold it?"
+  }};
 let S=loadLocal();
 
 /* ---------- local persistence (always on, offline cache) ---------- */
@@ -299,6 +312,7 @@ function save(){ saveLocal(); toast(); scheduleCloud(); }
 /* ---------- nav + views ---------- */
 const NAV=[
   {id:'goals',ic:'◎',label:'Goals & Concepts',live:true},
+  {id:'audit',ic:'◱',label:'The Audit',live:true},
   {id:'offer',ic:'◈',label:'Offer & Pricing'},
   {id:'plan',ic:'▤',label:'Business Plan'},
   {id:'contacts',ic:'☎',label:'Contacts'},
@@ -306,7 +320,9 @@ const NAV=[
 ];
 function renderNav(){document.getElementById('nav').innerHTML=NAV.map(n=>`<button class="${n.live?(S.view===n.id?'active':''):'soon'}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}${n.live?'':'<span class="badge">soon</span>'}</button>`).join('');}
 function go(v){S.view=v;save();render();}
-function render(){renderNav();const v=NAV.find(n=>n.id===S.view);document.getElementById('view').innerHTML=(v&&v.live)?vGoals():vSoon(v);}
+const VIEWS={goals:vGoals,audit:vAudit};
+function render(){renderNav();const v=NAV.find(n=>n.id===S.view);const fn=(v&&v.live&&VIEWS[v.id])?VIEWS[v.id]:()=>vSoon(v);document.getElementById('view').innerHTML=fn();}
+function dateStr(){return new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});}
 function bind(path,val,ph,tall){const[a,b]=path.split('.');
   if(tall)return `<div class="rt" contenteditable="true" data-path="${path}" data-ph="${ph}" onblur="rtSave(this)">${val||''}</div>`;
   return `<input type="text" onchange="S.${a}.${b}=this.value;save()" value="${esc(val)}" placeholder="${ph}">`;}
@@ -344,6 +360,48 @@ function vGoals(){
       </div></div>
   </div>`;
 }
+function vAudit(){
+  const a=S.audit;
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Foundation</div><h1>The Leak Audit</h1>
+    <p>Exactly what a Leak Audit is — its scope, what the client receives, and how fast. This is the definition everything downstream (pricing, the promise, the pitch) is built on.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
+  <div class="body">
+    <div class="print-only print-head"><span class="ph-brand">Leak · business hub</span><span class="ph-date">Prepared ${dateStr()}</span></div>
+
+    <div class="concept-wrap"><div class="kicker">The audit · one line</div>
+      <h3>What a Leak Audit is, in a sentence.</h3>
+      <div class="rt concept-input" contenteditable="true" data-path="audit.oneline" data-ph="A one-off, 13-week profit-leak audit of a café's own numbers…" onblur="rtSave(this)">${a.oneline||''}</div></div>
+
+    <div class="card"><h3><span class="dot"></span>Scope — what it examines</h3><p class="hint">The inputs and the window. Concrete enough to run the same way every time.</p>
+      <div class="field"><label class="fl">What we look at</label>${bind('audit.inputs',a.inputs,'The three files every café already has…',true)}</div>
+      <div class="field"><label class="fl">What it hunts</label>${bind('audit.hunts',a.hunts,'Leaks invisible on the P&amp;L, measured vs the café\'s own baseline…',true)}</div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,var(--leak-light),var(--white) 70%)"><h3><span class="dot"></span>Out of scope</h3><p class="hint">Saying what it's NOT protects your turnaround, your margins, and the accountant relationship.</p>
+      <div class="field">${bind('audit.outscope',a.outscope,'Not included: stocktake, menu re-engineering, on-site visits, bookkeeping/tax…',true)}</div>
+    </div>
+
+    <div class="card"><h3><span class="dot"></span>Deliverable — what they receive</h3><p class="hint">The tangible output. This is the thing worth paying for.</p>
+      <div class="field"><label class="fl">The report</label>${bind('audit.deliverable',a.deliverable,'The branded Profit Leak Audit PDF…',true)}</div>
+      <div class="field"><label class="fl">Walkthrough call</label>${bind('audit.call',a.call,'A 20-minute call to walk the findings and the path onto the subscription…',true)}</div>
+    </div>
+
+    <div class="card"><h3><span class="dot"></span>Turnaround</h3><p class="hint">The speed promise — and, just as important, when the clock starts.</p>
+      <div class="grid2">
+        <div class="field"><label class="fl">Promise</label>${bind('audit.turnaround',a.turnaround,'5 business days',false)}</div>
+        <div class="field"><label class="fl">Clock starts when…</label>${bind('audit.clock',a.clock,'…all three files are received (not at purchase)',false)}</div>
+      </div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 75%)"><h3><span class="dot"></span>Decisions to lock</h3><p class="hint">Nail these three and the audit is fully defined — then we move to Offer &amp; Pricing.</p>
+      <div class="field">${bind('audit.decisions',a.decisions,'1) 13-week lookback? 2) call included? 3) 5-day vs 48-hour turnaround?',true)}</div>
+    </div>
+  </div>`;
+}
+
 function vSoon(n){return `<div class="hero"><div class="kicker">Next to build</div><h1>${n.label}</h1><p>We’re building this hub one page at a time so each one’s actually right. This section is next when you’re ready.</p></div>
   <div class="body"><div class="soon-card"><div class="em">🛠️</div><h3><span class="dot"></span>${n.label} — coming next</h3><p>Say the word and we’ll design this page together, in your Leak branding, just like Goals &amp; Concepts.</p></div></div>`;}
 
