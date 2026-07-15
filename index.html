@@ -68,6 +68,33 @@
   .sectsub{color:var(--gray-500);font-size:13.5px;margin:0 0 14px;max-width:720px}
   .detgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:18px}
   .detgrid .card{margin-bottom:0}
+  .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+  .btn.danger{color:#b91c1c}
+  .btn.danger:hover{background:#fef2f2}
+  .rowbtn{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  /* contacts table */
+  .tablecard{padding:6px 8px;overflow-x:auto}
+  table.ct{width:100%;border-collapse:collapse;min-width:760px}
+  table.ct th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);padding:9px 10px;border-bottom:1px solid var(--line);font-weight:700}
+  table.ct td{padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+  table.ct tr:last-child td{border-bottom:0}
+  table.ct input,table.ct select{border:1px solid transparent;background:transparent;border-radius:8px;padding:8px;font-size:13.5px;width:100%;font-family:inherit;color:var(--ink)}
+  table.ct input:hover,table.ct select:hover{border-color:var(--line)}
+  table.ct input:focus,table.ct select:focus{border-color:rgba(109,40,217,.4);background:var(--white);box-shadow:0 0 0 3px rgba(109,40,217,.08);outline:none}
+  .emptyrow{color:var(--gray-400);text-align:center;padding:26px;font-size:13.5px}
+  /* scoreboard */
+  .stat{background:var(--white);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--card-sh)}
+  .stat .n{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--ink)}
+  .stat .n small{font-size:17px;color:var(--gray-400);font-weight:700}
+  .stat .l{color:var(--gray-500);font-size:13px;margin-top:6px}
+  .bar{height:9px;background:var(--brand-light);border-radius:20px;overflow:hidden;margin-top:12px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#22c55e);border-radius:20px}
+  .funnel{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .fr{display:flex;align-items:center;gap:12px}
+  .fr .fl2{width:130px;color:var(--gray-600);font-size:13px;flex:0 0 auto}
+  .fr .fbar{flex:1;height:26px;background:var(--brand-light);border-radius:8px;overflow:hidden;position:relative}
+  .fr .fbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand-dark),var(--brand));min-width:2px}
+  .fr .fn{position:absolute;left:10px;top:0;line-height:26px;font-size:12.5px;font-weight:700;color:#fff}
   @media(max-width:860px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.hero,.body{padding-left:22px;padding-right:22px}}
 
   .card{background:var(--white);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--card-sh);margin-bottom:18px;transition:box-shadow .2s}
@@ -186,7 +213,6 @@
       <div class="mark">L</div>
       <div><div class="wm">Leak</div><div class="tag">business hub</div></div>
     </div>
-    <div class="navgroup">Foundation</div>
     <nav class="nav" id="nav"></nav>
     <div class="side-foot">
       <div class="sync local" id="sync"><span class="d"></span><div><div id="syncTxt">Local only</div><div class="who" id="syncWho"></div></div></div>
@@ -239,7 +265,37 @@ const SEED={view:'goals',
     turnaround:"5 business days",
     clock:"When all three files are received, not at purchase",
     decisions:"LOCKED: 13-week lookback · async Loom walkthrough (no live calls) · 5 business days from the day all files are received."
-  }};
+  },
+  offer:{
+    ladder:"1. The Audit: a paid, one-off 13-week profit-leak audit. It proves in dollars that Leak sees what the P&L hides.<br>2. The walkthrough Loom shows them the leaks and the fix, on their own time.<br>3. The weekly subscription: they keep the habit so the leaks stay closed and new ones get caught the week they appear.<br><br>The audit is the front door. The subscription is the business.",
+    auditStd:"$999",
+    auditFounding:"$499",
+    foundingSpots:"5, then it moves to standard",
+    subStarter:"$99 / month",
+    starterInc:"The weekly profit-leak report from their own POS, wages and invoices: labour, food cost and supplier creep, each scored against their own baseline, with a plain-English action list and the banked-savings ledger proving it paid for itself.",
+    subPro:"$199 / month",
+    proInc:"Everything in Starter, plus trend history across quarters and multi-location support for owners running more than one venue.",
+    credit:"Recommended: the founding audit fee comes off their first two months of subscription, so moving from a one-off audit to the weekly habit feels like a saving, not a second decision.",
+    promise:"We find the money your café is quietly losing, from the numbers you already have.",
+    guarantee:"We will find at least [set a floor, e.g. $3,000] in annual leaks, or the audit is free. (The Marlow sample found $12,400.)",
+    why:"Leak is priced on the money it finds, not the hours it takes. A single caught leak, like a mispriced supplier or an over-rostered weekend, usually covers the audit several times over in the first quarter. That is the frame: this is not a cost, it is the first return."
+  },
+  plan:{
+    oneliner:"Leak turns the three files a café already produces each week into a plain-English report of exactly where their profit is leaking, and what to do about it.",
+    problem:"Independent cafés in Australia run on thin margins and quietly lose profit through labour, food cost and supplier creep. None of it shows on a monthly P&L, which arrives late and only says whether the month was good or bad, not where the money went. Owners are too busy running the floor to find it, so the same leaks repeat for months.",
+    solution:"Leak reads a café's POS sales, wages and supplier invoices, compares every number against that café's own rolling baseline, and returns a short weekly report: where money leaked, what it cost, and the one thing to fix next week. The maths is validated to the cent against a real café. It is a proper multi-tenant subscription product, not a one-off report.",
+    icp:"Owner-operated independent cafés in Australia doing enough volume to have real numbers, but not so big they have a finance team. Busy, hands-on, they feel the pinch but cannot see the cause. Not for franchises, chains, or hobby cafés with no reliable data.",
+    model:"A one-off Profit Leak Audit as the paid front door ($999, founding rate $499), converting to a weekly subscription: Starter $99/month, Pro $199/month. Revenue is recurring; the audit both qualifies the café and pays for its own acquisition.",
+    gtm:"Founding sprint first: land 5 audits at the founding rate through warm and cold outreach to cafés and venues already in the network. Use the results as proof. Content through the social studio builds inbound over time. Every audit is a chance to convert to the subscription and to earn a referral.",
+    edge:"The moat is not the maths, it is the data pipeline and the copy. Leak reads files owners already have, so the weekly habit survives a busy week, and it speaks in plain operator language, not accountant jargon. Every number is measured against the café's own history, which kills the 'this is just a spreadsheet ratio' objection. The longer a café stays, the more baseline Leak has and the sharper it gets.",
+    traction:"The analysis engine is validated to the cent against a real café (Tucker Casuarina) and passes 92 ground-truth and honesty checks. Tenant isolation is enforced at the database layer and verified by dozens of attack tests. A branded sample audit (Marlow & Co, $12,400 a year found) is ready to sell against.",
+    roadmap:"Near term, in priority order: prove ROI with the banked-savings ledger (live), kill upload friction with reminder emails and email-forwarded invoices, then deepen the insight (sales per labour hour is live; wastage and menu margin are next). The rule: do not add insight nobody uploads for until the weekly habit is locked.",
+    risks:"Churn if the ROI is not obvious or the weekly upload lapses. Over-claiming beyond what the engine computes, so scope stays honest. Manual audit review does not scale past the founding clients without productising. Reliance on clean file exports from varied POS and payroll systems.",
+    financials:"30-day goal: 5 audits, about $5,000, first subscribers. 90-day: a repeatable pitch and a stack of subscribers proving retention. 12-month: a base of recurring revenue that makes the weekly report a habit owners will not run the week without. Set the exact MRR target on Goals & Concepts."
+  },
+  contacts:[],
+  goal:{audits:5,revenue:5000,subs:3,days:30,start:''}
+  };
 let S=loadLocal();
 
 /* ---------- local persistence (always on, offline cache) ---------- */
@@ -319,18 +375,19 @@ function save(){ saveLocal(); toast(); scheduleCloud(); }
 
 /* ---------- nav + views ---------- */
 const NAV=[
-  {id:'goals',ic:'◎',label:'Goals & Concepts',live:true},
-  {id:'audit',ic:'◱',label:'The Audit',live:true},
-  {id:'offer',ic:'◈',label:'Offer & Pricing'},
-  {id:'plan',ic:'▤',label:'Business Plan'},
-  {id:'contacts',ic:'☎',label:'Contacts'},
-  {id:'score',ic:'▲',label:'Scoreboard'}
+  {id:'goals',ic:'◎',label:'Goals & Concepts',group:'Foundation'},
+  {id:'audit',ic:'◱',label:'The Audit',group:'Foundation'},
+  {id:'offer',ic:'◈',label:'Offer & Pricing',group:'The offer'},
+  {id:'plan',ic:'▤',label:'Business Plan',group:'The offer'},
+  {id:'contacts',ic:'☎',label:'Contacts',group:'Growth'},
+  {id:'score',ic:'▲',label:'Scoreboard',group:'Growth'}
 ];
-function renderNav(){document.getElementById('nav').innerHTML=NAV.map(n=>`<button class="${n.live?(S.view===n.id?'active':''):'soon'}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}${n.live?'':'<span class="badge">soon</span>'}</button>`).join('');}
+function renderNav(){let html='',lastG=null;NAV.forEach(n=>{if(n.group!==lastG){html+=`<div class="navgroup">${n.group}</div>`;lastG=n.group;}html+=`<button class="${S.view===n.id?'active':''}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}</button>`;});document.getElementById('nav').innerHTML=html;}
 function go(v){S.view=v;save();render();}
-const VIEWS={goals:vGoals,audit:vAudit};
-function render(){renderNav();const v=NAV.find(n=>n.id===S.view);const fn=(v&&v.live&&VIEWS[v.id])?VIEWS[v.id]:()=>vSoon(v);document.getElementById('view').innerHTML=fn();}
+const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,contacts:vContacts,score:vScore};
+function render(){renderNav();const fn=VIEWS[S.view]||vGoals;document.getElementById('view').innerHTML=fn();}
 function dateStr(){return new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});}
+function num(s){return parseFloat(String(s||'').replace(/[^0-9.]/g,''))||0;}
 function bind(path,val,ph,tall){const[a,b]=path.split('.');
   if(tall)return `<div class="rt" contenteditable="true" data-path="${path}" data-ph="${ph}" onblur="rtSave(this)">${val||''}</div>`;
   return `<input type="text" onchange="S.${a}.${b}=this.value;save()" value="${esc(val)}" placeholder="${ph}">`;}
@@ -415,6 +472,166 @@ function vAudit(){
 
     <div class="card" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 75%)"><h3><span class="dot"></span>Locked in ✓</h3><p class="hint">These three are settled. Next up: Offer &amp; Pricing.</p>
       <div class="field">${bind('audit.decisions',a.decisions,'1) 13-week lookback? 2) call included? 3) 5-day vs 48-hour turnaround?',true)}</div>
+    </div>
+  </div>`;
+}
+
+function printHead(){return `<div class="print-only print-head"><span class="ph-brand">Leak · business hub</span><span class="ph-date">Prepared ${dateStr()}</span></div>`;}
+
+/* ---------- OFFER & PRICING ---------- */
+function vOffer(){
+  const o=S.offer;
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">The offer</div><h1>Offer &amp; Pricing</h1>
+    <p>How the audit and the subscription are packaged, priced and guaranteed. Built on the audit you defined: a 13-week profit-leak audit as the paid front door to the weekly Leak habit.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="concept-wrap"><div class="kicker">The offer ladder</div>
+      <h3>How a stranger becomes a paying subscriber.</h3>
+      <div class="rt concept-input" contenteditable="true" data-path="offer.ladder" data-ph="Audit (paid front door), then the weekly subscription…" onblur="rtSave(this)">${o.ladder||''}</div></div>
+
+    <h2 class="secttl">Pricing</h2>
+    <p class="sectsub">Anchored to the money found, not the hours spent. The Marlow sample surfaced about $12,400 a year against a $999 audit: a 12x return before they even subscribe.</p>
+    <div class="detgrid">
+      <div class="card"><h3><span class="dot"></span>The Audit</h3>
+        <div class="field"><label class="fl">Standard price</label>${bind('offer.auditStd',o.auditStd,'$999',false)}</div>
+        <div class="field"><label class="fl">Founding-client rate</label>${bind('offer.auditFounding',o.auditFounding,'$499',false)}</div>
+        <div class="field"><label class="fl">Founding spots</label>${bind('offer.foundingSpots',o.foundingSpots,'5',false)}</div>
+      </div>
+      <div class="card"><h3><span class="dot"></span>Starter subscription</h3>
+        <div class="field"><label class="fl">Price</label>${bind('offer.subStarter',o.subStarter,'$99 / month',false)}</div>
+        <div class="field"><label class="fl">What's included</label>${bind('offer.starterInc',o.starterInc,'Weekly profit-leak report…',true)}</div>
+      </div>
+      <div class="card"><h3><span class="dot"></span>Pro subscription</h3>
+        <div class="field"><label class="fl">Price</label>${bind('offer.subPro',o.subPro,'$199 / month',false)}</div>
+        <div class="field"><label class="fl">Adds on top</label>${bind('offer.proInc',o.proInc,'Trends + multi-location…',true)}</div>
+      </div>
+    </div>
+
+    <div class="card"><h3><span class="dot"></span>Does the audit fee credit the first month?</h3><p class="hint">A common closer: the audit fee comes off their first subscription, so saying yes to Leak feels free.</p>
+      <div class="field">${bind('offer.credit',o.credit,'e.g. the founding audit credits the first two months…',true)}</div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,var(--leak-light),var(--white) 70%)"><h3><span class="dot"></span>The promise / guarantee</h3><p class="hint">Make the risk disappear. This is the line that turns a considered purchase into an obvious one.</p>
+      <div class="field"><label class="fl">One-line promise</label>${bind('offer.promise',o.promise,'We find the money your café is quietly losing…',true)}</div>
+      <div class="field"><label class="fl">Guarantee</label>${bind('offer.guarantee',o.guarantee,'We find at least [set a floor] in annual leaks, or you don\'t pay.',true)}</div>
+    </div>
+
+    <div class="card"><h3><span class="dot"></span>Why it's priced this way</h3><p class="hint">Your own note, for when someone pushes back on price.</p>
+      <div class="field">${bind('offer.why',o.why,'Priced against the money found, not the hours worked…',true)}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- BUSINESS PLAN ---------- */
+function vPlan(){
+  const p=S.plan;
+  const sec=(k,title,ph)=>`<div class="card"><h3><span class="dot"></span>${title}</h3><div class="field">${bind('plan.'+k,p[k],ph,true)}</div></div>`;
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">The offer</div><h1>Business Plan</h1>
+    <p>The whole thing on one page. A living doc you can edit as the picture sharpens, and export as a PDF whenever you need to show it.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="concept-wrap"><div class="kicker">In one line</div>
+      <h3>Leak, if you only had a sentence.</h3>
+      <div class="rt concept-input" contenteditable="true" data-path="plan.oneliner" data-ph="Leak turns the three files a café already has into…" onblur="rtSave(this)">${p.oneliner||''}</div></div>
+    ${sec('problem','The problem','What painful, expensive thing does Leak kill?')}
+    ${sec('solution','The solution','What Leak actually does…')}
+    ${sec('icp','Who it is for','The ideal café, and who it is not for…')}
+    ${sec('model','Business model','How the money works: audit front door plus subscription…')}
+    ${sec('gtm','Go to market','How the first customers are won…')}
+    ${sec('edge','Edge / moat','What Leak has that a spreadsheet or consultant does not…')}
+    ${sec('traction','Traction / proof','Validated engine, tests, sample audit…')}
+    ${sec('roadmap','Roadmap','What gets built next, and in what order…')}
+    ${sec('risks','Risks','What could kill it, and how it is managed…')}
+    ${sec('financials','Targets / financials','30-day, 90-day and 12-month numbers…')}
+  </div>`;
+}
+
+/* ---------- CONTACTS ---------- */
+const STAGES=['To contact','Contacted','Replied','Audit booked','Audit sent','Subscribed','Passed'];
+function addC(){S.contacts.push({id:uid(),name:'',venue:'',loc:'',contact:'',stage:0,notes:''});save();render();}
+function updC(i,k,v){S.contacts[i][k]=v;save();}
+function delC(i){S.contacts.splice(i,1);save();render();}
+function vContacts(){
+  const n=S.contacts.length, warm=S.contacts.filter(c=>c.stage>=1&&c.stage!==6).length;
+  const rows=S.contacts.map((c,i)=>`<tr>
+      <td><input type="text" value="${esc(c.name)}" placeholder="Name" onchange="updC(${i},'name',this.value)"></td>
+      <td><input type="text" value="${esc(c.venue)}" placeholder="Venue" onchange="updC(${i},'venue',this.value)"></td>
+      <td><input type="text" value="${esc(c.loc)}" placeholder="Town" onchange="updC(${i},'loc',this.value)"></td>
+      <td><input type="text" value="${esc(c.contact)}" placeholder="phone / IG / email" onchange="updC(${i},'contact',this.value)"></td>
+      <td><select onchange="updC(${i},'stage',+this.value);render()">${STAGES.map((s,si)=>`<option value="${si}" ${c.stage==si?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td><input type="text" value="${esc(c.notes)}" placeholder="notes" onchange="updC(${i},'notes',this.value)"></td>
+      <td><button class="btn ghost sm danger" onclick="delC(${i})" title="Remove">×</button></td>
+    </tr>`).join('');
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Growth</div><h1>Contacts</h1>
+    <p>Every café and venue you know, and where each one is in the pipeline. ${n} logged${n<25?`, aim for 25 or more (${25-n} to go).`:', target reached.'} ${warm} in motion. Move a contact through the stages and the Scoreboard updates itself.</p></div>
+    <button class="btn primary pdf-btn" onclick="addC()">+ Add contact</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="card tablecard">
+      ${n?`<table class="ct"><thead><tr><th>Name</th><th>Venue</th><th>Town</th><th>Contact</th><th>Stage</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+        :'<div class="emptyrow">No contacts yet. Brain-dump every café and venue person you know, warmest first, then add the aspirational ones.</div>'}
+    </div>
+    <div class="rowbtn"><button class="btn ghost sm" onclick="addC()">+ Add another</button></div>
+  </div>`;
+}
+
+/* ---------- SCOREBOARD ---------- */
+function vScore(){
+  const g=S.goal, C=S.contacts;
+  const done=C.filter(c=>c.stage>=4&&c.stage!==6).length;
+  const subs=C.filter(c=>c.stage===5).length;
+  const fee=num(S.offer.auditFounding)||num(S.offer.auditStd)||499;
+  const revenue=done*fee;
+  const start=g.start||new Date().toISOString().slice(0,10);
+  const end=new Date(new Date(start).getTime()+(g.days||30)*864e5);
+  const daysLeft=Math.max(0,Math.ceil((end-new Date())/864e5));
+  const funnel=[
+    {l:'Contacts',n:C.length},
+    {l:'Contacted',n:C.filter(c=>c.stage>=1&&c.stage!==6).length},
+    {l:'Replied',n:C.filter(c=>c.stage>=2&&c.stage!==6).length},
+    {l:'Audit booked',n:C.filter(c=>c.stage>=3&&c.stage!==6).length},
+    {l:'Audit sent',n:done},
+    {l:'Subscribed',n:subs}
+  ];
+  const fmax=Math.max(1,...funnel.map(f=>f.n));
+  const pct=(a,b)=>Math.min(100,Math.round(a/(b||1)*100));
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Growth</div><h1>Scoreboard</h1>
+    <p>Auto-tracked from your Contacts stages, so you never hand-update it. ${daysLeft} day${daysLeft===1?'':'s'} left in this sprint.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="grid3">
+      <div class="stat"><div class="n">${done}<small> / ${g.audits}</small></div><div class="l">Audits delivered</div><div class="bar"><i style="width:${pct(done,g.audits)}%"></i></div></div>
+      <div class="stat"><div class="n">$${revenue.toLocaleString()}<small> / $${(g.revenue||0).toLocaleString()}</small></div><div class="l">Audit revenue</div><div class="bar"><i style="width:${pct(revenue,g.revenue)}%"></i></div></div>
+      <div class="stat"><div class="n">${subs}<small> / ${g.subs}</small></div><div class="l">Subscribers</div><div class="bar"><i style="width:${pct(subs,g.subs)}%"></i></div></div>
+    </div>
+    <div class="card"><h3><span class="dot"></span>Pipeline funnel</h3><p class="hint">Move contacts through their stages and this fills itself in.</p>
+      <div class="funnel">${funnel.map(f=>`<div class="fr"><div class="fl2">${f.l}</div><div class="fbar"><i style="width:${Math.round(f.n/fmax*100)}%"></i><span class="fn">${f.n}</span></div></div>`).join('')}</div>
+    </div>
+    <div class="card"><h3><span class="dot"></span>The 30-day goal</h3><p class="hint">Revenue is counted as audits delivered times your founding rate. Adjust the targets any time.</p>
+      <div class="grid3">
+        <div class="field"><label class="fl">Audits target</label><input type="number" value="${g.audits}" onchange="S.goal.audits=+this.value;save();render()"></div>
+        <div class="field"><label class="fl">Revenue target ($)</label><input type="number" value="${g.revenue}" onchange="S.goal.revenue=+this.value;save();render()"></div>
+        <div class="field"><label class="fl">Subscriber target</label><input type="number" value="${g.subs}" onchange="S.goal.subs=+this.value;save();render()"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label class="fl">Sprint length (days)</label><input type="number" value="${g.days}" onchange="S.goal.days=+this.value;save();render()"></div>
+        <div class="field"><label class="fl">Start date</label><input type="date" value="${start}" onchange="S.goal.start=this.value;save();render()"></div>
+      </div>
     </div>
   </div>`;
 }
