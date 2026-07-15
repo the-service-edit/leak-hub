@@ -75,6 +75,18 @@
   input[type=text],input[type=email],input[type=password],textarea{width:100%;background:var(--white);border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:11px 13px;font-size:14.5px;font-family:inherit;transition:.15s;resize:vertical;box-shadow:inset 0 1px 2px rgb(16 20 24 / .03)}
   input:focus,textarea:focus{outline:none;border-color:rgba(109,40,217,.4);box-shadow:0 0 0 4px rgba(109,40,217,.1)}
   textarea{min-height:86px;line-height:1.6}
+  /* rich-text answer fields (highlight/bold) */
+  .rt{width:100%;background:var(--white);border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:11px 13px;font-size:14.5px;font-family:inherit;line-height:1.6;min-height:86px;box-shadow:inset 0 1px 2px rgb(16 20 24 / .03);outline:none;overflow-wrap:anywhere}
+  .rt:focus{border-color:rgba(109,40,217,.4);box-shadow:0 0 0 4px rgba(109,40,217,.1)}
+  .rt:empty:before{content:attr(data-ph);color:var(--gray-400);pointer-events:none}
+  .rt mark,.rt span[style*="background"]{background:#ffe08a;color:inherit;border-radius:3px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  .concept-input.rt:empty:before{color:rgba(255,255,255,.55)}
+  .rt-toolbar{position:absolute;z-index:300;display:none;gap:2px;background:var(--ink);border-radius:10px;padding:4px;box-shadow:var(--lift-sh);transform:translate(-50%,calc(-100% - 8px))}
+  .rt-toolbar.show{display:flex}
+  .rt-toolbar button{background:transparent;border:0;color:#fff;font-size:13px;font-weight:700;padding:5px 9px;border-radius:7px;cursor:pointer;font-family:inherit;line-height:1}
+  .rt-toolbar button:hover{background:rgba(255,255,255,.16)}
+  .rt-toolbar .sw{display:inline-block;width:11px;height:11px;border-radius:3px;background:#ffe08a;vertical-align:-1px;margin-right:5px}
+  .rt-toolbar .sep{width:1px;background:rgba(255,255,255,.18);margin:2px 1px}
   .field{margin-bottom:15px}.field:last-child{margin-bottom:0}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -88,7 +100,7 @@
   .goalcard{background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--card-sh)}
   .goalcard .gh{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);margin-bottom:2px}
   .goalcard .gs{font-size:11.5px;color:var(--gray-400);margin-bottom:12px}
-  .goalcard textarea{min-height:120px;border:0;box-shadow:none;background:var(--paper);padding:12px}
+  .goalcard textarea,.goalcard .rt{min-height:120px;border:0;box-shadow:none;background:var(--paper);padding:12px}
   .soon-card{background:var(--white);border-radius:var(--r-lg);padding:40px;box-shadow:var(--card-sh);text-align:center}
   .soon-card .em{font-size:30px;margin-bottom:10px}
   .soon-card h3{justify-content:center;font-size:19px}
@@ -158,6 +170,13 @@
   </div>
 </div>
 
+<div class="rt-toolbar" id="rtbar">
+  <button onmousedown="event.preventDefault()" onclick="rtCmd('hilite')"><span class="sw"></span>Highlight</button>
+  <span class="sep"></span>
+  <button onmousedown="event.preventDefault()" onclick="rtCmd('bold')" style="font-style:italic">B</button>
+  <span class="sep"></span>
+  <button onmousedown="event.preventDefault()" onclick="rtCmd('clear')">Clear</button>
+</div>
 <div class="save-toast" id="toast"><span class="d"></span>Saved</div>
 
 <script>
@@ -253,7 +272,10 @@ const NAV=[
 function renderNav(){document.getElementById('nav').innerHTML=NAV.map(n=>`<button class="${n.live?(S.view===n.id?'active':''):'soon'}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}${n.live?'':'<span class="badge">soon</span>'}</button>`).join('');}
 function go(v){S.view=v;save();render();}
 function render(){renderNav();const v=NAV.find(n=>n.id===S.view);document.getElementById('view').innerHTML=(v&&v.live)?vGoals():vSoon(v);}
-function bind(path,val,ph,tall){const[a,b]=path.split('.');const on=`onchange="S.${a}.${b}=this.value;save()"`;return tall?`<textarea ${on} placeholder="${ph}">${esc(val)}</textarea>`:`<input type="text" ${on} value="${esc(val)}" placeholder="${ph}">`;}
+function bind(path,val,ph,tall){const[a,b]=path.split('.');
+  if(tall)return `<div class="rt" contenteditable="true" data-path="${path}" data-ph="${ph}" onblur="rtSave(this)">${val||''}</div>`;
+  return `<input type="text" onchange="S.${a}.${b}=this.value;save()" value="${esc(val)}" placeholder="${ph}">`;}
+function rtSave(el){const p=el.getAttribute('data-path');if(!p)return;const[a,b]=p.split('.');S[a][b]=el.innerHTML;save();}
 
 function vGoals(){
   const c=S.concept,g=S.goals;
@@ -263,7 +285,7 @@ function vGoals(){
   <div class="body">
     <div class="concept-wrap"><div class="kicker">The concept · one line</div>
       <h3>If someone asked “what’s Leak?” at a business conference — this is what you’d say.</h3>
-      <textarea class="concept-input" onchange="S.concept.oneliner=this.value;save()" placeholder="Leak is … that helps … stop …">${esc(c.oneliner)}</textarea></div>
+      <div class="rt concept-input" contenteditable="true" data-path="concept.oneliner" data-ph="Leak is … that helps … stop …" onblur="rtSave(this)">${c.oneliner||''}</div></div>
     <div class="card"><h3><span class="dot"></span>In plain words</h3><p class="hint">The slightly longer version — how you’d explain it to a café owner over coffee.</p>
       <div class="field">${bind('concept.plain',c.plain,'Leak looks at a venue’s numbers and shows the owner exactly where money is quietly leaking out — then helps them plug it.',true)}</div></div>
     <div class="card"><h3><span class="dot"></span>The problem I kill</h3><p class="hint">What painful, expensive thing does Leak make disappear? Why can’t owners see it themselves?</p>
@@ -277,9 +299,9 @@ function vGoals(){
       <div class="field">${bind('concept.north',c.north,'e.g. paying subscribers · dollars saved for clients / month · MRR',false)}</div></div>
     <div class="card" style="background:linear-gradient(135deg,var(--leak-light),var(--white) 70%)"><h3><span class="dot"></span>Where it’s going</h3><p class="hint">Concrete targets across three horizons. Numbers you can point at, not vibes.</p>
       <div class="grid3">
-        <div class="goalcard"><div class="gh">30 days</div><div class="gs">The sprint in front of you</div><textarea onchange="S.goals.d30=this.value;save()" placeholder="e.g. 5 audits, $5k AUD, 3 subscribers">${esc(g.d30)}</textarea></div>
-        <div class="goalcard"><div class="gh">90 days</div><div class="gs">Proof it’s real</div><textarea onchange="S.goals.d90=this.value;save()" placeholder="e.g. 10 subscribers, $__ MRR, repeatable pitch">${esc(g.d90)}</textarea></div>
-        <div class="goalcard"><div class="gh">12 months</div><div class="gs">The picture</div><textarea onchange="S.goals.y1=this.value;save()" placeholder="e.g. $__ MRR, working __ days/wk, the life this buys">${esc(g.y1)}</textarea></div>
+        <div class="goalcard"><div class="gh">30 days</div><div class="gs">The sprint in front of you</div><div class="rt" contenteditable="true" data-path="goals.d30" data-ph="e.g. 5 audits, $5k AUD, 3 subscribers" onblur="rtSave(this)">${g.d30||''}</div></div>
+        <div class="goalcard"><div class="gh">90 days</div><div class="gs">Proof it’s real</div><div class="rt" contenteditable="true" data-path="goals.d90" data-ph="e.g. 10 subscribers, $__ MRR, repeatable pitch" onblur="rtSave(this)">${g.d90||''}</div></div>
+        <div class="goalcard"><div class="gh">12 months</div><div class="gs">The picture</div><div class="rt" contenteditable="true" data-path="goals.y1" data-ph="e.g. $__ MRR, working __ days/wk, the life this buys" onblur="rtSave(this)">${g.y1||''}</div></div>
       </div></div>
   </div>`;
 }
@@ -288,6 +310,27 @@ function vSoon(n){return `<div class="hero"><div class="kicker">Next to build</d
 
 function exportData(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='leak-hub-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();}
 function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=()=>{try{S=Object.assign(clone(SEED),JSON.parse(r.result));saveLocal();render();scheduleCloud();}catch(err){alert('Could not read that file.');}};r.readAsText(f);};inp.click();}
+
+/* ---------- rich-text highlight toolbar ---------- */
+function currentRtField(){const s=window.getSelection();if(!s||s.rangeCount===0)return null;let n=s.anchorNode;while(n&&n!==document.body){if(n.nodeType===1&&n.classList&&n.classList.contains('rt'))return n;n=n.parentNode;}return null;}
+function updateRtBar(){const bar=document.getElementById('rtbar');const s=window.getSelection();const f=currentRtField();
+  if(!f||!s||s.isCollapsed){bar.classList.remove('show');return;}
+  const r=s.getRangeAt(0).getBoundingClientRect();
+  if(!r||(r.width===0&&r.height===0)){bar.classList.remove('show');return;}
+  bar.style.left=(r.left+r.width/2+window.scrollX)+'px';
+  bar.style.top=(r.top+window.scrollY)+'px';
+  bar.classList.add('show');}
+document.addEventListener('mouseup',()=>setTimeout(updateRtBar,0));
+document.addEventListener('keyup',e=>{if(e.shiftKey||e.key==='Shift')updateRtBar();});
+document.addEventListener('selectionchange',()=>{const s=window.getSelection();if(!s||s.isCollapsed)document.getElementById('rtbar').classList.remove('show');});
+document.addEventListener('scroll',()=>document.getElementById('rtbar').classList.remove('show'),true);
+function rtCmd(kind){const f=currentRtField();if(!f)return;
+  try{document.execCommand('styleWithCSS',false,true);}catch(e){}
+  if(kind==='hilite')document.execCommand('hiliteColor',false,'#ffe08a');
+  else if(kind==='bold')document.execCommand('bold');
+  else if(kind==='clear')document.execCommand('removeFormat');
+  rtSave(f);
+  updateRtBar();}
 
 render();
 initCloud();
