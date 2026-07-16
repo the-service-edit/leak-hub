@@ -334,6 +334,13 @@ const SEED={view:'goals',
     followup:"<b>Day 7 bump:</b> Hi [Name], bumping this in case it slipped. One line: I find the profit your café is leaking, from files you already have, or you don't pay. Want me to send a sample report?<br><br><b>Day 12 breakup:</b> No worries if the timing is off, [Name]. I'll leave it here. If you ever want to see where [Café] is leaking, the door is open. All the best.",
     objections:"<b>Too busy right now.</b> It is ten minutes to send three files you already export, and there is no meeting. I do the work, you watch a short video whenever suits.<br><br><b>I've got an accountant.</b> Perfect, this does not replace them. Your accountant shows the P&L after the money is spent. Leak catches the leaks week to week, while you can still fix them.<br><br><b>Does it work with my POS?</b> If it exports a sales CSV, yes. Same for your payroll and supplier invoices.<br><br><b>How do I know it is worth it?</b> The guarantee: if I don't find savings worth at least twice the audit fee, you don't pay. And I'll send the sample report first, so you see exactly what you get."
   },
+  roadmap:{
+    principle:"Capture the idea now, build it after proof. Nothing on this page gets built until the sprint audits are sold and a couple of them convert to a subscription. Ideas are cheap. Focus is not.",
+    wins:"<b>The problem.</b> Right now Leak only ever tells an owner where they lost money. Fear sells the audit and the cold email brilliantly, but it is poison for a weekly habit. Nobody opens a report card of their own failures 52 times a year. The audit is a one-off; the subscription is the actual business, and it lives or dies on whether they want to open Monday's briefing.<br><br><b>The fix: a balanced Monday briefing.</b> Lead with a real win, name the one thing to fix, then show what they have banked since they started. Coach, not critic. The savings ledger and the 'paid for itself' badge are already the seed of this.<br><br><b>What to celebrate, at the same evidence bar as the leaks.</b> Best margin item. Where they beat cafés their size. Where they beat their own record. A shift rostered perfectly to trade. Sales growth on a line that matters. Never 'great job', always 'your coffee margin is running 4 points better than venues your size, that is about $X a year you are protecting'. The moment wins become fluff, they poison the credibility that makes the leaks believable.<br><br><b>It also sells more audits.</b> 'Here is what you nail, and here is where you leak' reads as a fair expert second opinion. 'Here is $12k you are losing' alone reads as an indictment. The balanced version converts better and gets referred more.<br><br><b>Priority: soon, and cheap.</b> Mostly copy and UX on numbers the engine already computes.",
+    integrations:"<b>Reframe.</b> These are not features, they are the thing that makes the subscription possible at all. A café owner will not upload three files every Monday. The audit survives on manual files because you collect them once. The weekly product dies in week three without data flowing on its own.<br><br><b>Priority order</b>, by friction removed against how often the data changes: first, sales through the POS, the backbone, changes daily, highest value. Second, wages through rostering. Third, invoices, where email-in already exists, so extend that rather than rebuild it.<br><br><b>The wedge.</b> Do not build five shallow integrations. Pick the one POS and one roster your AU cafés actually run (Lightspeed or Kounta, Square, Deputy, Tanda) and make 'connect it once, never upload again' flawless. That one line is the whole pitch for the subscription.<br><br><b>Honest cost.</b> POS and roster APIs are real engineering plus approval processes. Scope one deep, not five shallow, and build it once paying subscribers justify it.",
+    sequence:"Proof first. The order that protects the money.<br><br>1. Land the 5 sprint audits. This funds everything and earns the testimonials you do not have yet.<br>2. Convert a couple of those audit clients to the weekly subscription.<br>3. Ship the wins reframe. Soon and cheap, and it is what keeps subscribers opening the email.<br>4. Scope one POS plus one roster integration, once subscribers justify the build.<br><br>The trap is letting any of this pull you off the sprint. Capturing it here is smart. Building it now would be premature.",
+    notes:""
+  },
   igleads:[
     {id:uid(),handle:'regulatorhighett',comment:'I love cogs!',stage:0,notes:''},
     {id:uid(),handle:'lelolu',comment:'COGS',stage:0,notes:''},
@@ -435,6 +442,7 @@ const NAV=[
   {id:'audit',ic:'◱',label:'The Audit',group:'Foundation'},
   {id:'offer',ic:'◈',label:'Offer & Pricing',group:'The offer'},
   {id:'plan',ic:'▤',label:'Business Plan',group:'The offer'},
+  {id:'roadmap',ic:'❖',label:'Roadmap',group:'Product'},
   {id:'outreach',ic:'✉',label:'Cold Outreach',group:'Growth'},
   {id:'igleads',ic:'⌾',label:'Cold Call · Instagram',group:'Growth'},
   {id:'contacts',ic:'☎',label:'Contacts',group:'Growth'},
@@ -442,7 +450,7 @@ const NAV=[
 ];
 function renderNav(){let html='',lastG=null;NAV.forEach(n=>{if(n.group!==lastG){html+=`<div class="navgroup">${n.group}</div>`;lastG=n.group;}html+=`<button class="${S.view===n.id?'active':''}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}</button>`;});document.getElementById('nav').innerHTML=html;}
 function go(v){S.view=v;save();render();}
-const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,outreach:vOutreach,igleads:vIgleads,contacts:vContacts,score:vScore};
+const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,roadmap:vRoadmap,outreach:vOutreach,igleads:vIgleads,contacts:vContacts,score:vScore};
 function render(){renderNav();const fn=VIEWS[S.view]||vGoals;document.getElementById('view').innerHTML=fn();}
 function dateStr(){return new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});}
 function num(s){return parseFloat(String(s||'').replace(/[^0-9.]/g,''))||0;}
@@ -481,6 +489,33 @@ function vGoals(){
         <div class="goalcard"><div class="gh">90 days</div><div class="gs">Proof it’s real</div><div class="rt" contenteditable="true" data-path="goals.d90" data-ph="e.g. 10 subscribers, $__ MRR, repeatable pitch" onblur="rtSave(this)">${g.d90||''}</div></div>
         <div class="goalcard"><div class="gh">12 months</div><div class="gs">The picture</div><div class="rt" contenteditable="true" data-path="goals.y1" data-ph="e.g. $__ MRR, working __ days/wk, the life this buys" onblur="rtSave(this)">${g.y1||''}</div></div>
       </div></div>
+  </div>`;
+}
+function vRoadmap(){
+  const r=S.roadmap;
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Product</div><h1>Roadmap</h1>
+    <p>Where Leak goes next, and the discipline of when. Ideas captured now, sequenced so they never pull you off the sprint in front of you.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="concept-wrap"><div class="kicker">The rule for this page</div>
+      <h3>Capture now, build after proof.</h3>
+      <div class="rt concept-input" contenteditable="true" data-path="roadmap.principle" data-ph="Nothing here gets built until the audits are sold…" onblur="rtSave(this)">${r.principle||''}</div></div>
+
+    <div class="card" style="background:linear-gradient(135deg,var(--leak-light),var(--white) 70%)"><h3><span class="dot"></span>Fix the dismal: celebrate the wins</h3><p class="hint">A loss-only app wins the audit sale but churns the subscription. Balance it, at the same evidence bar as the leaks.</p>
+      <div class="field">${bind('roadmap.wins',r.wins,'',true)}</div></div>
+
+    <div class="card"><h3><span class="dot"></span>Integrations: kill the weekly upload</h3><p class="hint">Not features. The thing that makes a weekly subscription possible at all.</p>
+      <div class="field">${bind('roadmap.integrations',r.integrations,'',true)}</div></div>
+
+    <div class="card" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 75%)"><h3><span class="dot"></span>The discipline: proof before build</h3><p class="hint">The order that protects the money. Sequenced, not simultaneous.</p>
+      <div class="field">${bind('roadmap.sequence',r.sequence,'',true)}</div></div>
+
+    <div class="card"><h3><span class="dot"></span>Parking lot</h3><p class="hint">Everything else worth remembering but not deciding yet.</p>
+      <div class="field">${bind('roadmap.notes',r.notes,'Rename questions (Leak is a negative word), pricing tests, referral mechanics, other integrations…',true)}</div></div>
   </div>`;
 }
 function vAudit(){
