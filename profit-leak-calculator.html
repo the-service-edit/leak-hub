@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profit Leak Calculator | Leak</title>
+<meta name="description" content="See roughly where your cafe is leaking profit in 60 seconds. Built from real ATO benchmarks by a cafe owner of almost ten years.">
+<style>
+  /* ---- Leak brand tokens ---- */
+  :root{
+    --ink:#101418; --paper:#faf9f7; --white:#ffffff;
+    --brand:#6D28D9; --brand-dark:#5B21B6; --brand-light:#EDE9FE;
+    --leak:#c2410c; --leak-light:#fff1ea;
+    --good:#047857; --good-light:#ecfdf5;
+    --line:rgba(16,20,24,.08); --line2:rgba(16,20,24,.14);
+    --mut:#5b6470; --mut2:#8a94a1;
+    --radius:18px; --shadow:0 10px 40px rgba(16,20,24,.10);
+    --font:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font); color:var(--ink); background:var(--paper);
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(900px 500px at 85% -8%, rgba(109,40,217,.06), transparent 60%);
+    min-height:100vh;
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:32px 20px 64px}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+  .dot{width:30px;height:30px;border-radius:9px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;box-shadow:0 4px 14px rgba(109,40,217,.3)}
+  .brand b{font-size:16px;font-weight:800;letter-spacing:-.2px}
+  .brand span{font-size:12px;color:var(--mut);font-weight:500;display:block;margin-top:-2px}
+
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+  h1{font-size:29px;line-height:1.12;letter-spacing:-.5px;font-weight:800;margin-bottom:12px}
+  h1 em{font-style:normal;color:var(--leak)}
+  .lede{color:var(--mut);font-size:15.5px;max-width:44ch;margin-bottom:26px}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 22px}
+
+  .field{margin-bottom:18px}
+  .field:last-child{margin-bottom:0}
+  label{display:block;font-weight:600;font-size:14.5px;margin-bottom:7px}
+  label .hint{display:block;font-weight:400;font-size:12.5px;color:var(--mut2);margin-top:1px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .seg button{font-family:inherit;font-size:14.5px;font-weight:600;padding:12px;border-radius:12px;border:1.5px solid var(--line2);background:var(--white);color:var(--mut);cursor:pointer;transition:.15s}
+  .seg button.on{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark)}
+  .money{position:relative}
+  .money::before{content:'$';position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mut2);font-weight:600;font-size:16px}
+  input[type=number]{width:100%;font-family:inherit;font-size:17px;font-weight:600;padding:13px 14px 13px 28px;border:1.5px solid var(--line2);border-radius:12px;background:var(--white);color:var(--ink);transition:.15s;-moz-appearance:textfield}
+  input[type=number]:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-light)}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+  .go{width:100%;margin-top:22px;font-family:inherit;font-size:16.5px;font-weight:700;padding:16px;border-radius:13px;border:0;background:var(--brand);color:#fff;cursor:pointer;transition:.15s;box-shadow:0 6px 20px rgba(109,40,217,.28)}
+  .go:hover{background:var(--brand-dark)}
+  .go:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .foot-note{text-align:center;font-size:12px;color:var(--mut2);margin-top:14px;line-height:1.45}
+
+  /* ---- result ---- */
+  #result{display:none;margin-top:22px}
+  #result.show{display:block;animation:rise .5s cubic-bezier(.2,.7,.3,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .headline{text-align:center;padding:30px 22px 26px;background:linear-gradient(180deg,var(--leak-light),var(--white));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .headline.clean{background:linear-gradient(180deg,var(--good-light),var(--white))}
+  .headline .lab{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+  .big{font-size:52px;font-weight:800;letter-spacing:-1.5px;line-height:1;color:var(--leak);font-variant-numeric:tabular-nums}
+  .headline.clean .big{color:var(--good)}
+  .big .yr{font-size:19px;font-weight:600;color:var(--mut);letter-spacing:0}
+  .sub{color:var(--mut);font-size:14.5px;margin-top:12px;max-width:38ch;margin-left:auto;margin-right:auto}
+
+  .rows{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--white)}
+  .row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .pip{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .pip.over{background:var(--leak)} .pip.inside{background:#d97706} .pip.under{background:var(--good)}
+  .row .txt{flex:1;min-width:0}
+  .row .txt b{font-size:14.5px;font-weight:700;display:block}
+  .row .txt span{font-size:12.5px;color:var(--mut);display:block;line-height:1.4}
+  .row .val{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;text-align:right;flex:0 0 auto}
+  .val.over{color:var(--leak)} .val.inside{color:#b45309} .val.under{color:var(--good)}
+
+  .reframe{margin-top:14px;padding:18px 18px;background:var(--brand-light);border-radius:14px}
+  .reframe b{color:var(--brand-dark);font-size:15px}
+  .reframe p{font-size:13.5px;color:#4b3a73;margin-top:5px;line-height:1.5}
+  .reframe .num{font-weight:800;color:var(--brand-dark)}
+
+  .cta{margin-top:16px;text-align:center;padding:24px 20px;background:var(--ink);border-radius:var(--radius);color:#fff}
+  .cta h3{font-size:20px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px}
+  .cta p{font-size:14px;color:#c7ccd3;max-width:40ch;margin:0 auto 18px;line-height:1.55}
+  .cta a{display:inline-block;font-weight:700;font-size:16px;padding:15px 30px;border-radius:12px;background:#fff;color:var(--ink);text-decoration:none;transition:.15s}
+  .cta a:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .cta .terms{margin-top:14px;font-size:12px;color:#8a94a1}
+  .cta .terms b{color:#EDE9FE}
+
+  .again{display:block;width:100%;text-align:center;margin-top:14px;background:none;border:0;font-family:inherit;font-size:13.5px;color:var(--mut);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+  .disclaim{font-size:11.5px;color:var(--mut2);text-align:center;margin-top:26px;line-height:1.55;max-width:46ch;margin-left:auto;margin-right:auto}
+  .disclaim a{color:var(--mut)}
+  .err{color:var(--leak);font-size:13px;font-weight:600;margin-top:10px;text-align:center;display:none}
+  .err.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="dot">L</div>
+    <div><b>Leak</b><span>Profit Leak Audits for hospitality</span></div>
+  </div>
+
+  <p class="kicker">Free 60-second check</p>
+  <h1>Find out where your cafe is <em>quietly leaking profit</em>.</h1>
+  <p class="lede">Four numbers off your POS and last wage run. We compare them to what venues your size actually reported to the ATO, and show you the gap.</p>
+
+  <div class="card" id="form">
+    <div class="field">
+      <label>What kind of venue?</label>
+      <div class="seg" id="type">
+        <button type="button" data-v="coffee" class="on">Cafe / coffee shop</button>
+        <button type="button" data-v="restaurant">Restaurant</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Average weekly sales
+        <span class="hint">Total takings in a normal week, including GST</span></label>
+      <div class="money"><input type="number" id="sales" inputmode="numeric" placeholder="18,000" min="0"></div>
+    </div>
+    <div class="field">
+      <label>Weekly food &amp; drink cost
+        <span class="hint">What you pay suppliers in a normal week (stock, produce, coffee)</span></label>
+      <div class="money"><input type="number" id="cogs" inputmode="numeric" placeholder="6,500" min="0"></div>
+    </div>
+    <div class="field">
+      <label>Weekly wage cost
+        <span class="hint">Total wages incl. super and casual loading, a normal week</span></label>
+      <div class="money"><input type="number" id="wages" inputmode="numeric" placeholder="5,200" min="0"></div>
+    </div>
+    <button class="go" id="go">Show me the leak</button>
+    <p class="err" id="err">Pop a number in each box to see your result.</p>
+    <p class="foot-note">No sign-up. Nothing saved. This runs entirely in your browser.</p>
+  </div>
+
+  <div id="result"></div>
+
+  <p class="disclaim">
+    This is an estimate built from the figures you enter, compared to the
+    <a href="https://www.ato.gov.au/businesses-and-organisations/income-deductions-and-concessions/small-business-benchmarks" target="_blank" rel="noopener">ATO Small Business Benchmarks</a>
+    (2023-24 returns, published March 2026). Benchmarks show the range, not your exact leak. A Profit Leak Audit reads your real invoices, roster and sales week by week to confirm the number. Nothing you type here is sent or stored.
+  </p>
+</div>
+
+<script>
+(function(){
+  // ---- ATO Small Business Benchmarks (cost of sales & labour as % of turnover) ----
+  // Source of truth mirrors src/lib/benchmarks.ts. Never fudge these.
+  var BENCH = {
+    coffee: { label:'cafes and coffee shops', bands:[
+      { max:250000, cogs:[34,42], cogsAvg:38, labour:[21,32], labourAvg:27 },
+      { max:600000, cogs:[35,41], cogsAvg:38, labour:[21,32], labourAvg:27 },
+      { max:Infinity, cogs:[33,38], cogsAvg:36, labour:[27,35], labourAvg:31 } ]},
+    restaurant: { label:'restaurants', bands:[
+      { max:500000, cogs:[32,39], cogsAvg:35, labour:[18,30], labourAvg:24 },
+      { max:2000000, cogs:[32,38], cogsAvg:35, labour:[23,32], labourAvg:28 },
+      { max:Infinity, cogs:[31,36], cogsAvg:34, labour:[27,34], labourAvg:30 } ]}
+  };
+  var SALE_LO = 1.5, SALE_HI = 2.5; // cafe sells at 1.5-2.5x annual profit (SDE)
+
+  var state = { type:'coffee' };
+  var $ = function(id){ return document.getElementById(id); };
+
+  // segmented control
+  Array.prototype.forEach.call(document.querySelectorAll('#type button'), function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#type button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); state.type = b.dataset.v;
+    });
+  });
+
+  function bandFor(type, annual){
+    var bands = BENCH[type].bands;
+    for (var i=0;i<bands.length;i++){ if (annual <= bands[i].max) return bands[i]; }
+    return bands[bands.length-1];
+  }
+  function money(n){
+    n = Math.round(n);
+    return '$' + n.toLocaleString('en-AU');
+  }
+  function positionCogs(pct, band){ if(pct>band.cogs[1])return'over'; if(pct<band.cogs[0])return'under'; return'inside'; }
+  function positionLab(pct, band){ if(pct>band.labour[1])return'over'; if(pct<band.labour[0])return'under'; return'inside'; }
+
+  // returns {leak, upside, pos, line}
+  function assess(pct, band, kind){
+    var top = kind==='cogs' ? band.cogs[1] : band.labour[1];
+    var avg = kind==='cogs' ? band.cogsAvg : band.labourAvg;
+    var lo  = kind==='cogs' ? band.cogs[0] : band.labour[0];
+    var pos = kind==='cogs' ? positionCogs(pct,band) : positionLab(pct,band);
+    var pctTxt = pct.toFixed(1) + '%';
+    var rangeTxt = lo + '-' + top + '%';
+    if (pos==='over'){
+      return { leak:(pct-top)/100, upside:(pct-avg)/100, pos:pos,
+        line:'You are at ' + pctTxt + '. Venues your size sit at ' + rangeTxt + '.' };
+    }
+    if (pos==='inside'){
+      var up = pct>avg ? (pct-avg)/100 : 0;
+      return { leak:0, upside:up, pos:pos,
+        line: pct>avg
+          ? 'At ' + pctTxt + ' you are inside the range but above the ' + avg + '% average.'
+          : 'At ' + pctTxt + ' you are inside the healthy range.' };
+    }
+    return { leak:0, upside:0, pos:pos, line:'At ' + pctTxt + ' you are running below the typical range.' };
+  }
+
+  function calc(){
+    var salesW = parseFloat(String($('sales').value).replace(/[^0-9.]/g,''));
+    var cogsW  = parseFloat(String($('cogs').value).replace(/[^0-9.]/g,''));
+    var wagesW = parseFloat(String($('wages').value).replace(/[^0-9.]/g,''));
+    if (!(salesW>0) || !(cogsW>=0) || !(wagesW>=0)){ $('err').classList.add('show'); return; }
+    $('err').classList.remove('show');
+
+    var annualTurnover = salesW * 52 / 1.1;        // ex-GST, for band selection
+    var annualSalesGross = salesW * 52;            // leak $ expressed on money that moves
+    var cogsPct = cogsW / salesW * 100;
+    var labPct  = wagesW / salesW * 100;
+    var band = bandFor(state.type, annualTurnover);
+
+    var f = assess(cogsPct, band, 'cogs');
+    var l = assess(labPct,  band, 'labour');
+
+    // Conservative headline: annualised amount ABOVE the top of the healthy range.
+    var foodLeak = f.leak * annualSalesGross;
+    var labLeak  = l.leak * annualSalesGross;
+    var totalLeak = foodLeak + labLeak;
+
+    // Upside if no hard leak: gap to the average for their size.
+    var foodUp = f.upside * annualSalesGross;
+    var labUp  = l.upside * annualSalesGross;
+    var totalUp = foodUp + labUp;
+
+    render({
+      band:band, cogsPct:cogsPct, labPct:labPct,
+      f:f, l:l, foodLeak:foodLeak, labLeak:labLeak, totalLeak:totalLeak,
+      foodUp:foodUp, labUp:labUp, totalUp:totalUp
+    });
+  }
+
+  function rowHtml(name, a, leakDollars, upDollars){
+    var v, cls;
+    if (a.pos==='over'){ v = money(leakDollars) + '/yr'; cls='over'; }
+    else if (a.pos==='inside' && upDollars>200){ v = money(upDollars) + '/yr'; cls='inside'; }
+    else if (a.pos==='inside'){ v = 'On range'; cls='inside'; }
+    else { v = 'Tight'; cls='under'; }
+    return '<div class="row"><span class="pip '+a.pos+'"></span>'
+      + '<div class="txt"><b>'+name+'</b><span>'+a.line+'</span></div>'
+      + '<div class="val '+cls+'">'+v+'</div></div>';
+  }
+
+  function render(r){
+    var hasLeak = r.totalLeak >= 1;
+    var hasUpside = !hasLeak && r.totalUp >= 200;
+    var html = '';
+
+    if (hasLeak){
+      var saleLo = money(r.totalLeak*SALE_LO), saleHi = money(r.totalLeak*SALE_HI);
+      html += '<div class="headline">'
+        + '<div class="lab">Estimated profit leak</div>'
+        + '<div class="big">'+money(r.totalLeak)+' <span class="yr">/ year</span></div>'
+        + '<p class="sub">That is roughly what you would keep by pulling these two ratios back to the top of the healthy range for your size.</p></div>';
+      html += '<div class="rows">'
+        + rowHtml('Food &amp; drink cost', r.f, r.foodLeak, r.foodUp)
+        + rowHtml('Labour cost', r.l, r.labLeak, r.labUp) + '</div>';
+      html += '<div class="reframe"><b>The bit most owners miss</b>'
+        + '<p>A cafe changes hands on a multiple of its profit. If you closed this leak and it held, you would not just save '+money(r.totalLeak)+' a year, you would add roughly <span class="num">'+saleLo+' to '+saleHi+'</span> to what the business is worth the day you sell. (Australian cafes trade at about 1.5 to 2.5x annual profit.)</p></div>';
+    } else if (hasUpside){
+      var uLo = money(r.totalUp*SALE_LO), uHi = money(r.totalUp*SALE_HI);
+      html += '<div class="headline">'
+        + '<div class="lab">Headline ratios look healthy</div>'
+        + '<div class="big" style="color:var(--brand-dark)">'+money(r.totalUp)+' <span class="yr">/ yr upside</span></div>'
+        + '<p class="sub">You are inside the range, so no obvious leak. Tightening to the average for your size is still worth this much.</p></div>';
+      html += '<div class="rows">'
+        + rowHtml('Food &amp; drink cost', r.f, r.foodLeak, r.foodUp)
+        + rowHtml('Labour cost', r.l, r.labLeak, r.labUp) + '</div>';
+      html += '<div class="reframe"><b>Benchmarks only see the average, not your week</b>'
+        + '<p>These ratios are a snapshot. They cannot see a supplier lifting prices 8% in small steps, a weekend rostered for trade that did not show, or food cost drifting off your own normal. That is what an audit reads, invoice by invoice.</p></div>';
+    } else {
+      html += '<div class="headline clean">'
+        + '<div class="lab">Your headline ratios are tight</div>'
+        + '<div class="big">Well run</div>'
+        + '<p class="sub">Both food and labour are sitting at or below the typical range for a venue your size. Good discipline.</p></div>';
+      html += '<div class="rows">'
+        + rowHtml('Food &amp; drink cost', r.f, r.foodLeak, r.foodUp)
+        + rowHtml('Labour cost', r.l, r.labLeak, r.labUp) + '</div>';
+      html += '<div class="reframe"><b>Where tight venues still leak</b>'
+        + '<p>The last few points hide in places a ratio never shows: supplier creep, weekend roster splits, week-to-week drift, portioning. Small, invisible, and they add up. That is exactly the layer an audit is built to read.</p></div>';
+    }
+
+    // CTA (same on every path)
+    html += '<div class="cta">'
+      + '<h3>Want the real number?</h3>'
+      + '<p>A Profit Leak Audit reads thirteen weeks of your invoices, roster and sales and hands you a short, plain-English report: the exact leaks, in dollars, in the order that pays fastest.</p>'
+      + '<a href="BOOKING_URL" id="book">Book your Profit Leak Audit</a>'
+      + '<p class="terms"><b>$999 flat</b> &nbsp;&middot;&nbsp; backed by a <b>3x guarantee</b>: we find at least three times the fee in opportunities, or you do not pay.</p></div>';
+
+    html += '<button class="again" id="again">Start over</button>';
+
+    var box = $('result');
+    box.innerHTML = html;
+    box.classList.add('show');
+
+    // wire booking + reset. Swap BOOKING_URL below for the live enquiry link.
+    var BOOK = 'https://leak-rebuild.vercel.app/#book';
+    var book = $('book'); if (book) book.setAttribute('href', BOOK);
+    $('again').addEventListener('click', function(){
+      box.classList.remove('show'); box.innerHTML='';
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+    box.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  $('go').addEventListener('click', calc);
+  ['sales','cogs','wages'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calc(); });
+  });
+})();
+</script>
+</body>
+</html>

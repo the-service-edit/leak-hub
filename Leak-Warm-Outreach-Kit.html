@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leak | Warm Outreach Kit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  :root{
+    --ink:#101418; --paper:#faf9f7; --white:#fff;
+    --brand:#6D28D9; --brand-dark:#5B21B6; --brand-light:#EDE9FE;
+    --leak:#c2410c; --good:#047857;
+    --line:rgba(16,20,24,.10); --mut:#5b6470; --mut2:#8a94a1;
+    --font:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(900px 500px at 90% -8%, rgba(109,40,217,.05), transparent 60%);}
+  .wrap{max-width:760px;margin:0 auto;padding:36px 22px 72px}
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:26px}
+  .dot{width:32px;height:32px;border-radius:9px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px}
+  .brand b{font-size:17px;font-weight:800}
+  .brand span{font-size:12px;color:var(--mut);display:block;margin-top:-2px}
+
+  h1{font-size:27px;font-weight:800;letter-spacing:-.5px;line-height:1.14;margin-bottom:8px}
+  .sub{color:var(--mut);font-size:15px;max-width:60ch;margin-bottom:22px}
+
+  .flag{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:15px 17px;margin-bottom:28px;font-size:13.5px;color:#9a3412;line-height:1.55}
+  .flag b{color:#7c2d12}
+
+  h2{font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);margin:32px 0 6px}
+  .h2note{font-size:13px;color:var(--mut);margin-bottom:14px}
+
+  .msg{background:var(--white);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 22px rgba(16,20,24,.06);overflow:hidden;margin-bottom:18px}
+  .msg .top{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;background:var(--ink);color:#fff}
+  .msg .top b{font-size:13px;font-weight:700}
+  .msg .top .tag{font-size:11px;color:#c7ccd3;font-weight:500}
+  .msg .body{padding:17px 18px;font-size:14px;line-height:1.62;white-space:pre-wrap;font-family:var(--font)}
+  .msg .body .slot{background:var(--brand-light);color:var(--brand-dark);font-weight:700;padding:0 3px;border-radius:4px}
+  .subj{font-size:13px;color:var(--mut);padding:11px 18px 0}
+  .subj b{color:var(--ink)}
+
+  .legend{font-size:12.5px;color:var(--mut);margin:6px 0 18px;line-height:1.55}
+  .legend .slot{background:var(--brand-light);color:var(--brand-dark);font-weight:700;padding:0 4px;border-radius:4px}
+
+  /* tracker table */
+  table{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--white);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{background:var(--paper);text-align:left;padding:9px 11px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);border-bottom:1px solid var(--line);font-weight:700}
+  td{padding:11px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink)}
+  td.num{color:var(--mut2);font-weight:700;text-align:center;width:26px}
+  tr:last-child td{border-bottom:0}
+  .fill{color:var(--mut2)}
+
+  .funnel{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+  .fstep{flex:1;min-width:88px;background:var(--white);border:1px solid var(--line);border-radius:10px;padding:11px;text-align:center}
+  .fstep b{display:block;font-size:19px;font-weight:800;color:var(--brand-dark)}
+  .fstep span{font-size:11px;color:var(--mut)}
+
+  ol.play{margin:6px 0 8px;padding-left:20px;font-size:13.5px;line-height:1.7;color:var(--ink)}
+  ol.play b{font-weight:700}
+  .tip{font-size:12.5px;color:var(--mut);background:var(--brand-light);border-radius:10px;padding:12px 14px;margin-top:8px;line-height:1.55}
+  .foot{margin-top:34px;border-top:1px solid var(--line);padding-top:14px;font-size:12px;color:var(--mut2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="dot">L</div><div><b>Leak</b><span>Warm outreach kit</span></div></div>
+
+  <h1>Your 10 warmest, one personal audit offer.</h1>
+  <p class="sub">Ready-to-send messages for the people who already know and trust you. Personal, low-pressure, and built to book a 15-minute call, not to hard-sell. Pick the channel each contact actually uses.</p>
+
+  <div class="flag">
+    <b>Read me first.</b> I have written and checked these, but I have not sent anything. Sending outreach in your name is your call to make. To fire them: drop your 10 names in the tracker below, paste the matching message, swap the <span style="background:#fde68a;padding:0 3px;border-radius:3px">purple slots</span> for the real details, and hit send. Two things need your decision before you send, both in the flags note I have left you separately: the <b>price</b> ($999 vs the $1,500 on the site) and whether to add a <b>founding-client sweetener</b> for these first few. I have written both a full-price and a founding-client version so you can choose.
+  </div>
+
+  <p class="legend">Swap every slot: <span class="slot">Name</span> their first name, <span class="slot">Café</span> their venue, <span class="slot">personal line</span> one true, specific sentence only you could write (how you know them, last time you spoke, something about their place). That one line is what separates this from spam.</p>
+
+  <!-- EMAIL A -->
+  <h2>1 . Email . full price</h2>
+  <p class="h2note">Best for contacts you would email anyway. The guarantee is the sweetener, so you never sound like you are discounting.</p>
+  <div class="msg">
+    <div class="subj"><b>Subject:</b> quick one, <span class="slot">Name</span></div>
+    <div class="body">Hey <span class="slot">Name</span>,
+
+<span class="slot">personal line, e.g. "Still thinking about that natural wine you poured me at Café last month."</span>
+
+Quick reason I'm writing. I've just launched Leak. I read a café's last 13 weeks of sales, wages and supplier invoices and find exactly where profit is quietly leaking out. Not the big obvious stuff, the small stuff nobody catches: a supplier creeping prices 8% in steps you never see, a weekend rostered for trade that didn't turn up, food cost drifting off your own normal.
+
+I'm doing a handful of these this month and I'd genuinely love <span class="slot">Café</span> to be one of them. On the sample audit I can send you, the method surfaced $12,400 a year across three fixes, none of it visible on the P&L.
+
+It's $999 flat, and it's backed by a promise: I find at least three times that in opportunities, or you don't pay. So worst case, you get a free read of your own numbers.
+
+Want me to send the one-pager, or easier to grab 15 minutes this week?
+
+Mel</div>
+  </div>
+
+  <!-- EMAIL B -->
+  <h2>2 . Email . founding client</h2>
+  <p class="h2note">If you'd rather trade a first-round audit for a testimonial and a case study. Only use with people whose name would carry weight.</p>
+  <div class="msg">
+    <div class="subj"><b>Subject:</b> want to try something on <span class="slot">Café</span>?</div>
+    <div class="body">Hey <span class="slot">Name</span>,
+
+<span class="slot">personal line</span>
+
+I've just launched Leak, an audit that reads a café's last 13 weeks of numbers and finds exactly where profit is leaking out. Supplier creep, weekend rostering, food cost drift, the quiet stuff that never shows on a P&L.
+
+I'm picking a few founding cafés to run first, and I'd love <span class="slot">Café</span> to be one. Here's the deal: I do the full audit for you <span class="slot">free / at $499</span>, and if it's as useful as I think it'll be, all I ask is a few honest words I can quote and permission to reference it.
+
+No catch, no pitch at the end you can't say no to. Worst case you get a proper read of your numbers and I get a bit sharper.
+
+Up for it? I can start this week.
+
+Mel</div>
+  </div>
+
+  <!-- IG DM -->
+  <h2>3 . Instagram / Facebook DM</h2>
+  <p class="h2note">Shorter, warmer, no subject line. Match the tone you'd normally use with them.</p>
+  <div class="msg">
+    <div class="top"><b>Direct message</b><span class="tag">~60 words</span></div>
+    <div class="body"><span class="slot">Name</span>! <span class="slot">personal line</span>
+
+Quick one. I've just launched Leak, I read a café's last 13 weeks of sales, wages and invoices and find where profit's quietly leaking (supplier creep, over-rostered weekends, that kind of thing). My sample audit surfaced $12k a year in one café.
+
+Doing a few this month and would love <span class="slot">Café</span> to be one. It's backed by a 3x-or-you-don't-pay promise. Can I send you the one-pager? x</div>
+  </div>
+
+  <!-- SMS -->
+  <h2>4 . Text message</h2>
+  <p class="h2note">For the ones you have a real phone relationship with. Keep it human.</p>
+  <div class="msg">
+    <div class="top"><b>SMS</b><span class="tag">~40 words</span></div>
+    <div class="body">Hey <span class="slot">Name</span>, it's Mel. <span class="slot">personal line</span> I've just launched Leak, I find exactly where a café's profit is leaking from its own numbers. Doing a few audits this month and want <span class="slot">Café</span> in. Backed by a 3x-or-free promise. Can I send you a one-pager?</div>
+  </div>
+
+  <!-- FOLLOW UP -->
+  <h2>5 . The follow-up (day 3-4, no reply)</h2>
+  <p class="h2note">One nudge only. If nothing after this, leave it warm and move on.</p>
+  <div class="msg">
+    <div class="body">Hey <span class="slot">Name</span>, no worries if the timing's off. If it helps, here's the one-pager so you've got it: <span class="slot">link</span>. The offer holds while I've got audit spots this month. Either way, hope <span class="slot">Café</span>'s flying. x</div>
+  </div>
+
+  <!-- TRACKER -->
+  <h2>Your 10 . the tracker</h2>
+  <p class="h2note">Fill this in as you go. Warmest at the top. The daily target for the sprint is 10 personal outreaches a day, so this is today's list.</p>
+  <table>
+    <thead><tr><th>#</th><th>Name</th><th>Café / venue</th><th>Channel</th><th>Version</th><th>Personal line</th><th>Sent</th><th>Reply</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="fill">&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">7</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">8</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">9</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="num">10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Why this shape works</h2>
+  <ol class="play">
+    <li><b>Personal line first.</b> Warm contacts smell a template instantly. The one true sentence up top earns the next ten.</li>
+    <li><b>Specific proof, not adjectives.</b> "$12,400 across three fixes" beats "save money" every time. A real number is impossible to argue with.</li>
+    <li><b>The guarantee removes the risk, so you never discount.</b> "3x or you don't pay" reframes $999 from a cost into a free look with upside.</li>
+    <li><b>The ask is tiny.</b> "Send the one-pager or grab 15 minutes" is a yes anyone can give. You are not asking them to buy, only to look.</li>
+  </ol>
+  <div class="tip"><b>One move that lifts reply rates:</b> record a 20-second selfie video for your 3 warmest instead of typing the DM. Same words, your face. Warm contact plus a talking human is the highest-converting outreach there is, and almost nobody does it.</div>
+
+  <h2>The maths behind today</h2>
+  <div class="funnel">
+    <div class="fstep"><b>10</b><span>outreaches today</span></div>
+    <div class="fstep"><b>~1</b><span>conversation</span></div>
+    <div class="fstep"><b>0.5</b><span>call</span></div>
+    <div class="fstep"><b>0.25</b><span>audit</span></div>
+  </div>
+  <p class="legend">Your sprint funnel is 200 outreach → 20 conversations → 10 calls → 5 audits. Warm contacts convert far higher than cold, so these 10 are your best single shot at the whole month. Do them properly, not fast.</p>
+
+  <div class="foot">Leak . The Service Edit . hello@theserviceedit.com . Drafts only, nothing sent.</div>
+</div>
+</body>
+</html>
