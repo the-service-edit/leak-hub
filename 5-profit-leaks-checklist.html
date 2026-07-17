@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 5 Profit Leaks Draining Your Venue | Leak</title>
+<meta name="description" content="A 2-minute self-check for cafe and restaurant owners. The five places your profit quietly leaks, the tell-tale signs, and what each one usually costs a year. Built by a cafe owner of almost ten years.">
+<style>
+  :root{
+    --ink:#101418; --paper:#faf9f7; --white:#ffffff;
+    --brand:#6D28D9; --brand-dark:#5B21B6; --brand-light:#EDE9FE;
+    --leak:#c2410c; --leak-light:#fff1ea;
+    --good:#047857; --good-light:#ecfdf5;
+    --line:rgba(16,20,24,.08); --line2:rgba(16,20,24,.14);
+    --mut:#5b6470; --mut2:#8a94a1;
+    --radius:18px; --shadow:0 10px 40px rgba(16,20,24,.10);
+    --font:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font); color:var(--ink); background:var(--paper);
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(900px 500px at 85% -8%, rgba(109,40,217,.06), transparent 60%);
+    min-height:100vh;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:32px 20px 72px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:28px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .dot{width:30px;height:30px;border-radius:9px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;box-shadow:0 4px 14px rgba(109,40,217,.3)}
+  .brand b{font-size:16px;font-weight:800;letter-spacing:-.2px}
+  .brand span{font-size:12px;color:var(--mut);font-weight:500;display:block;margin-top:-2px}
+  .print-btn{flex:0 0 auto;font-family:inherit;font-size:13px;font-weight:700;padding:10px 16px;border-radius:11px;border:1.5px solid var(--line2);background:var(--white);color:var(--ink);cursor:pointer;transition:.15s}
+  .print-btn:hover{border-color:var(--brand);color:var(--brand-dark)}
+
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+  h1{font-size:32px;line-height:1.1;letter-spacing:-.6px;font-weight:800;margin-bottom:14px}
+  h1 em{font-style:normal;color:var(--leak)}
+  .lede{color:var(--mut);font-size:16px;max-width:56ch;margin-bottom:14px}
+  .how{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--mut);background:var(--brand-light);border-radius:12px;padding:12px 16px;margin-bottom:30px}
+  .how b{color:var(--brand-dark)}
+
+  .leak{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 24px 22px;margin-bottom:20px}
+  .leak-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+  .num{flex:0 0 auto;width:38px;height:38px;border-radius:11px;background:var(--leak-light);color:var(--leak);display:grid;place-items:center;font-weight:800;font-size:18px}
+  .leak-head h2{font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1.2}
+  .leak-head .tag{display:block;font-size:12.5px;font-weight:600;color:var(--mut);margin-top:3px}
+  .leak p.desc{font-size:14.5px;color:var(--mut);line-height:1.55;margin-bottom:16px}
+
+  .signs{list-style:none;margin:0 0 16px}
+  .signs li{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.45;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .signs li:last-child{border-bottom:0}
+  .box{flex:0 0 auto;width:20px;height:20px;margin-top:1px;border:1.8px solid var(--line2);border-radius:6px;display:grid;place-items:center;transition:.12s}
+  .signs li.on .box{background:var(--leak);border-color:var(--leak)}
+  .box svg{width:12px;height:12px;opacity:0;transition:.12s}
+  .signs li.on .box svg{opacity:1}
+  .signs li.on .sign-txt{color:var(--ink)}
+  .sign-txt{color:#2b333d}
+
+  .cost{display:flex;align-items:baseline;gap:10px;background:var(--paper);border:1px dashed var(--line2);border-radius:12px;padding:12px 15px;margin-bottom:14px}
+  .cost .lab{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+  .cost .amt{font-weight:800;font-size:16px;color:var(--leak);font-variant-numeric:tabular-nums}
+  .fix{font-size:13.5px;line-height:1.5}
+  .fix b{color:var(--good)}
+
+  .score{background:var(--ink);color:#fff;border-radius:var(--radius);padding:28px 26px;margin:8px 0 22px;text-align:center}
+  .score .lab{font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#a9b2bd;margin-bottom:8px}
+  .score .tally{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums}
+  .score .tally .of{font-size:20px;color:#8a94a1;font-weight:600}
+  .score .read{font-size:14.5px;color:#c7ccd3;margin-top:12px;max-width:44ch;margin-left:auto;margin-right:auto;line-height:1.55;min-height:1.55em}
+
+  .cta{margin-top:6px;text-align:center;padding:30px 24px;background:linear-gradient(180deg,var(--brand-light),var(--white));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .cta h3{font-size:23px;font-weight:800;letter-spacing:-.4px;margin-bottom:10px}
+  .cta p{font-size:15px;color:var(--mut);max-width:48ch;margin:0 auto 20px;line-height:1.55}
+  .cta a{display:inline-block;font-weight:700;font-size:16.5px;padding:16px 34px;border-radius:13px;background:var(--brand);color:#fff;text-decoration:none;transition:.15s;box-shadow:0 6px 20px rgba(109,40,217,.28)}
+  .cta a:hover{background:var(--brand-dark);transform:translateY(-1px)}
+  .cta .terms{margin-top:16px;font-size:13px;color:var(--mut)}
+  .cta .terms b{color:var(--brand-dark)}
+
+  .disclaim{font-size:11.5px;color:var(--mut2);text-align:center;margin-top:26px;line-height:1.6;max-width:56ch;margin-left:auto;margin-right:auto}
+  .disclaim a{color:var(--mut)}
+  .foot{text-align:center;font-size:12.5px;color:var(--mut2);margin-top:22px}
+
+  @media print{
+    body{background:#fff;background-image:none}
+    .print-btn,.no-print{display:none !important}
+    .leak,.cta,.score{box-shadow:none;break-inside:avoid}
+    .wrap{padding:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot">L</div>
+      <div><b>Leak</b><span>Profit Leak Audits for hospitality</span></div>
+    </div>
+    <button class="print-btn no-print" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+  <p class="kicker">2-minute self-check</p>
+  <h1>The 5 profit leaks <em>quietly draining</em> your venue</h1>
+  <p class="lede">Most venues do not lose money in one big hole. They lose it in five small ones, a little every week, until a busy month somehow still ends flat. Here is where it usually goes, what the tell-tale signs look like, and what each leak tends to cost a year.</p>
+  <div class="how no-print"><span>&#9635;</span><div>Tick every sign that sounds like your venue. <b>Your score updates as you go.</b> Nothing is saved or sent, so be honest with yourself.</div></div>
+
+  <!-- LEAK 1 -->
+  <div class="leak">
+    <div class="leak-head">
+      <div class="num">1</div>
+      <div><h2>Labour that follows the roster, not the room</h2><span class="tag">Wages as a share of sales</span></div>
+    </div>
+    <p class="desc">The roster gets copied from last week out of habit, so the floor is staffed for a Saturday that never quite shows up. The leak hides on the quiet shifts and the slow first and last hour, not in the obvious rush.</p>
+    <ul class="signs">
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You build next week's roster by copying last week's.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Weekends feel over-staffed but nobody has checked sales per labour hour.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You could not say what your wage percentage was last week without digging.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">The open and the close are staffed the same on a slow Tuesday as a flat-out Friday.</span></li>
+    </ul>
+    <div class="cost"><span class="lab">Typical cost</span><span class="amt">$4,000 to $9,000 / year</span></div>
+    <p class="fix"><b>Quick fix:</b> pull sales per labour hour for last week, split weekday against weekend. Trim the single softest hour on your two quietest days before touching anything else.</p>
+  </div>
+
+  <!-- LEAK 2 -->
+  <div class="leak">
+    <div class="leak-head">
+      <div class="num">2</div>
+      <div><h2>Supplier prices creeping up, invoice by invoice</h2><span class="tag">Cost of goods drift</span></div>
+    </div>
+    <p class="desc">No single price rise is big enough to notice. Coffee lifts 40 cents, dairy a little, your main food supplier a percent here and there. Nobody re-checks the invoice against last month, so the creep just becomes the new normal.</p>
+    <ul class="signs">
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You could not name what your coffee or dairy cost per unit was six months ago.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Invoices get approved and paid without anyone comparing them to the last one.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You have not renegotiated with a core supplier in over a year.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Your food cost percentage feels higher lately but you cannot point to why.</span></li>
+    </ul>
+    <div class="cost"><span class="lab">Typical cost</span><span class="amt">$3,000 to $6,000 / year</span></div>
+    <p class="fix"><b>Quick fix:</b> put your three biggest suppliers side by side against the same invoice three months ago. Anything creeping above roughly 5 percent is a phone call, not a shrug.</p>
+  </div>
+
+  <!-- LEAK 3 -->
+  <div class="leak">
+    <div class="leak-head">
+      <div class="num">3</div>
+      <div><h2>Portions with no recipe and no yield</h2><span class="tag">Over-pour and waste</span></div>
+    </div>
+    <p class="desc">Every heavy hand, over-poured shot and generous plate is a cost you priced for once and never re-checked. And the item that looks cheap on paper often is not: an avocado costed on raw weight ignores the skin and stone you throw away, so the real cost per serve is a third higher than you think.</p>
+    <ul class="signs">
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Your top-selling dishes do not have a written, costed recipe.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Portions are done by eye, and two staff plate the same dish differently.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Your costings use raw weight and ignore trim, peel and waste.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Baristas are not weighing their dose, so grams per shot drift up on a busy day.</span></li>
+    </ul>
+    <div class="cost"><span class="lab">Typical cost</span><span class="amt">$2,500 to $5,000 / year</span></div>
+    <p class="fix"><b>Quick fix:</b> re-cost your five best sellers on usable weight, not raw. Weigh one busy day of coffee dosing. The gap between what you assumed and what is real is the leak.</p>
+  </div>
+
+  <!-- LEAK 4 -->
+  <div class="leak">
+    <div class="leak-head">
+      <div class="num">4</div>
+      <div><h2>A menu priced for last year's costs</h2><span class="tag">Eroding gross profit</span></div>
+    </div>
+    <p class="desc">Your costs have moved every quarter. Your board prices have not. Hold a price for a year while inputs climb and your gross profit quietly slides, one popular item at a time, without a single complaint from a customer.</p>
+    <ul class="signs">
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You have not repriced the menu in the last twelve months.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You do not know the gross profit margin on your best-selling item.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Prices were set by rounding up or matching the cafe down the road, not from cost.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">You forget the board price includes GST, so the margin is thinner than it looks.</span></li>
+    </ul>
+    <div class="cost"><span class="lab">Typical cost</span><span class="amt">$3,000 to $8,000 / year</span></div>
+    <p class="fix"><b>Quick fix:</b> take your ten highest-selling items and check the real margin on each, GST out. A 50-cent lift on a few high-volume lines rarely dents demand and drops almost straight to profit.</p>
+  </div>
+
+  <!-- LEAK 5 -->
+  <div class="leak">
+    <div class="leak-head">
+      <div class="num">5</div>
+      <div><h2>The quiet drains nobody totals up</h2><span class="tag">Waste, comps, voids and giveaways</span></div>
+    </div>
+    <p class="desc">The spoilage tipped out at close, the staff coffees and feeds, the remade orders, the voided sales, the mate's discount. Each is small and reasonable on its own. Nobody adds them up, so nobody sees that together they are a line item.</p>
+    <ul class="signs">
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Waste and spoilage are not written down, so you are guessing at the number.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Comps, voids and staff feeds are not tracked against a weekly limit.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Over-prepping and end-of-day dump-outs happen but never get costed.</span></li>
+      <li><span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.4L11 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sign-txt">Discounts and freebies are given at the till with no one watching the total.</span></li>
+    </ul>
+    <div class="cost"><span class="lab">Typical cost</span><span class="amt">$2,000 to $5,000 / year</span></div>
+    <p class="fix"><b>Quick fix:</b> track waste, comps and voids for two weeks on a single sheet. You cannot manage a number you have never once looked at, and just watching it usually shrinks it.</p>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score no-print">
+    <div class="lab">Signs you ticked</div>
+    <div class="tally"><span id="count">0</span><span class="of"> / 20</span></div>
+    <p class="read" id="read">Tick the signs above that sound like your venue.</p>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h3>Want the real number, not a range?</h3>
+    <p>A Profit Leak Audit finds exactly where your venue is leaking, in dollars, from your own POS, roster and invoices. Not a guess, not a benchmark. Your numbers.</p>
+    <a href="https://leak-rebuild.vercel.app/#book" target="_blank" rel="noopener">Book your Profit Leak Audit</a>
+    <p class="terms"><b>$999 flat</b> &nbsp;&middot;&nbsp; backed by a <b>3x guarantee</b>: I find at least three times the fee in opportunities, or you do not pay.</p>
+  </div>
+
+  <p class="disclaim">The dollar ranges above are typical for small hospitality venues and are illustrative, not a promise. Real leaks depend on your size, menu and setup, which is exactly what an audit measures. Built by Mel, a cafe owner of almost ten years.</p>
+  <p class="foot">Leak &middot; The Service Edit &middot; hello@theserviceedit.com</p>
+
+</div>
+
+<script>
+  var LEAKS = [
+    "Whichever leaks you ticked, they are almost never as small as they feel added up.",
+    "One leak ticked is one habit worth fixing this week. Start with the quick fix under it.",
+    "A couple of leaks showing is normal, and it is also real money. Pick the biggest and start there.",
+    "That is a few leaks running at once. Together they are very likely costing you more than an audit.",
+    "Most of these are live in your venue right now. This is exactly the pattern an audit is built to catch."
+  ];
+  var items = Array.prototype.slice.call(document.querySelectorAll('.signs li'));
+  var countEl = document.getElementById('count');
+  var readEl = document.getElementById('read');
+  function refresh(){
+    var n = document.querySelectorAll('.signs li.on').length;
+    countEl.textContent = n;
+    var read;
+    if(n === 0) read = "Tick the signs above that sound like your venue.";
+    else if(n <= 2) read = LEAKS[1];
+    else if(n <= 5) read = LEAKS[2];
+    else if(n <= 10) read = LEAKS[3];
+    else read = LEAKS[4];
+    readEl.textContent = read;
+  }
+  items.forEach(function(li){
+    li.addEventListener('click', function(){ li.classList.toggle('on'); refresh(); });
+  });
+</script>
+</body>
+</html>
