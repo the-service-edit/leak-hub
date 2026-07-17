@@ -298,7 +298,7 @@
       + '<h3>Want the real number?</h3>'
       + '<p>A Profit Leak Audit reads thirteen weeks of your invoices, roster and sales and hands you a short, plain-English report: the exact leaks, in dollars, in the order that pays fastest.</p>'
       + '<a href="BOOKING_URL" id="book">Book your Profit Leak Audit</a>'
-      + '<p class="terms"><b>$499 founding rate (first 5 clients), then $999</b> &nbsp;&middot;&nbsp; backed by a <b>2x guarantee</b>: we find at least twice the fee in opportunities, or you do not pay.</p></div>';
+      + '<p class="terms"><b>$999 flat</b> &nbsp;&middot;&nbsp; backed by a <b>3x guarantee</b>: we find at least three times the fee in opportunities, or you do not pay.</p></div>';
 
     html += '<button class="again" id="again">Start over</button>';
 

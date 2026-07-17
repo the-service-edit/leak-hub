@@ -153,12 +153,12 @@
   <!-- guarantee + price -->
   <div style="display:grid;grid-template-columns:1.32fr 1fr;gap:22px;margin-top:14px;align-items:stretch">
     <div class="card dark guar">
-      <div class="big">The <em>2x guarantee</em></div>
-      <div class="g">We find at least twice the fee in identified opportunities, or you don't pay. The audit is designed to pay for itself many times over before you change a single thing.</div>
+      <div class="big">The <em>3x guarantee</em></div>
+      <div class="g">We find at least three times the fee in identified opportunities, or you don't pay. The audit is designed to pay for itself many times over before you change a single thing.</div>
     </div>
     <div class="price">
-      <div class="amt">$499<small> AUD</small></div>
-      <div class="lab">founding rate, first 5 clients . then $999</div>
+      <div class="amt">$999<small> AUD</small></div>
+      <div class="lab">flat fee . one complete audit</div>
       <a class="cta" href="mailto:hello@theserviceedit.com?subject=Profit%20Leak%20Audit%20enquiry">Book your audit</a>
     </div>
   </div>
