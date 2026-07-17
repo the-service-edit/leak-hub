@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Objection Handling | Leak Cold Outreach</title>
+<meta name="description" content="Every stall a cafe owner throws at you on a cold call, and the exact words to say back. Price, time, accountant, Xero, too busy, partner approval.">
+<style>
+  :root{
+    --ink:#101418; --paper:#faf9f7; --white:#ffffff;
+    --brand:#6D28D9; --brand-dark:#5B21B6; --brand-light:#EDE9FE;
+    --leak:#c2410c; --leak-light:#fff1ea;
+    --line:rgba(16,20,24,.08); --line2:rgba(16,20,24,.14);
+    --mut:#5b6470; --mut2:#8a94a1;
+    --radius:18px; --shadow:0 10px 40px rgba(16,20,24,.10);
+    --font:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font); color:var(--ink); background:var(--paper);
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(900px 500px at 85% -8%, rgba(109,40,217,.06), transparent 60%);
+    min-height:100vh;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:32px 20px 72px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:28px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .dot{width:30px;height:30px;border-radius:9px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;box-shadow:0 4px 14px rgba(109,40,217,.3)}
+  .brand b{font-size:16px;font-weight:800;letter-spacing:-.2px}
+  .brand span{font-size:12px;color:var(--mut);font-weight:500;display:block;margin-top:-2px}
+  .print-btn{flex:0 0 auto;font-family:inherit;font-size:13px;font-weight:700;padding:10px 16px;border-radius:11px;border:1.5px solid var(--line2);background:var(--white);color:var(--ink);cursor:pointer;transition:.15s}
+  .print-btn:hover{border-color:var(--brand);color:var(--brand-dark)}
+
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+  h1{font-size:32px;line-height:1.1;letter-spacing:-.6px;font-weight:800;margin-bottom:14px}
+  h1 em{font-style:normal;color:var(--leak)}
+  .lede{color:var(--mut);font-size:16px;max-width:56ch;margin-bottom:22px}
+
+  .rule{display:flex;gap:12px;font-size:14px;color:var(--ink);background:var(--brand-light);border-radius:14px;padding:15px 18px;margin-bottom:26px;line-height:1.55}
+  .rule b{color:var(--brand-dark)}
+
+  .obj{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px 20px;margin-bottom:18px}
+  .obj-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:6px}
+  .num{flex:0 0 auto;width:36px;height:36px;border-radius:11px;background:var(--leak-light);color:var(--leak);display:grid;place-items:center;font-weight:800;font-size:17px}
+  .obj-head h2{font-size:19px;font-weight:800;letter-spacing:-.3px;line-height:1.25;padding-top:5px}
+  .quote{font-size:14px;font-style:italic;color:var(--mut2);margin:0 0 14px 50px}
+  .lbl{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--leak);margin:14px 0 4px}
+  .reframe{font-size:14.5px;color:var(--mut);line-height:1.55}
+  .say{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:15px;line-height:1.55;margin-top:2px}
+  .fill{color:var(--brand-dark);font-weight:700;background:var(--brand-light);padding:1px 5px;border-radius:5px}
+
+  .foot{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:13px;line-height:1.55}
+  .foot .fill{font-size:12.5px}
+
+  @media print{
+    body{background:#fff;background-image:none}
+    .no-print{display:none!important}
+    .wrap{padding:0;max-width:100%}
+    .obj{box-shadow:none;border-color:#ddd;break-inside:avoid}
+    .rule{background:#f3f0fa}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot">L</div>
+      <div><b>Leak</b><span>Cold outreach — objection handling</span></div>
+    </div>
+    <button class="print-btn no-print" onclick="window.print()">⬇ Save as PDF</button>
+  </div>
+
+  <div class="kicker">The Service Edit</div>
+  <h1>Every stall, and <em>the exact words back.</em></h1>
+  <p class="lede">Six objections a cafe owner will throw at you. A reframe for each, then a word-for-word script. Read the reframe to understand it; say the script.</p>
+
+  <div class="rule">
+    <div>◆</div>
+    <div><b>The rule:</b> never argue. Agree first, then reframe. "Fair enough" lowers the guard; the reframe moves the goalposts from <i>price</i> to <i>the cost of doing nothing</i>. You are not selling an audit. You are selling the money they are already losing every month they wait.</div>
+  </div>
+
+  <div class="obj">
+    <div class="obj-head"><span class="num">1</span><h2>Price — "$999 is too much"</h2></div>
+    <p class="quote">"That's steep for me right now."</p>
+    <div class="lbl">Reframe</div>
+    <p class="reframe">It is not a cost. It is a diagnostic on money already leaving the till. The fee is fixed. The leak is not — it compounds every month it goes unfound.</p>
+    <div class="lbl">Say this</div>
+    <p class="say">"Fair. Quick question though: do you know exactly how much margin you lost last month to overpouring, mispriced items and roster overspend? You can't, because it's invisible from the floor. The audit's $999 once. The average leak I find is <span class="fill">[$X,XXX] a month</span>. So it's not whether you can afford the audit — it's whether you can afford to keep bleeding that every month you don't."</p>
+  </div>
+
+  <div class="obj">
+    <div class="obj-head"><span class="num">2</span><h2>Time — "It'll take too long"</h2></div>
+    <p class="quote">"I don't have time for a big project."</p>
+    <div class="lbl">Reframe</div>
+    <p class="reframe">It's done-for-you. They picture doing the work. They aren't — you are. Their total input is one short call and view-only access.</p>
+    <div class="lbl">Say this</div>
+    <p class="say">"You're not doing the audit — I am. I need one 30-minute call and read-only access to your numbers. That's your entire involvement. You get the full report back in <span class="fill">[X business days]</span>. It's the fastest hour of admin you'll do all year."</p>
+  </div>
+
+  <div class="obj">
+    <div class="obj-head"><span class="num">3</span><h2>"I already have an accountant"</h2></div>
+    <p class="quote">"My accountant handles all that."</p>
+    <div class="lbl">Reframe</div>
+    <p class="reframe">Different job. An accountant records history and files tax — they tell you what already happened. They don't sit in your operations hunting live leaks: portion drift, menu pricing, labour ratio, supplier creep. It isn't their role, and they aren't paid to.</p>
+    <div class="lbl">Say this</div>
+    <p class="say">"Perfect — keep them. Your accountant is the scoreboard: they tell you what the game was. I'm the coach: I find the margin leaking out right now and show you how to stop it. They keep you compliant. I make you money. You want both."</p>
+  </div>
+
+  <div class="obj">
+    <div class="obj-head"><span class="num">4</span><h2>"We already use Xero"</h2></div>
+    <p class="quote">"We've got all our numbers in Xero."</p>
+    <div class="lbl">Reframe</div>
+    <p class="reframe">Xero stores the data. It doesn't interpret it. It shows you a number, never why it's wrong or what to do about it. Xero is the filing cabinet; the audit is the person who reads the file.</p>
+    <div class="lbl">Say this</div>
+    <p class="say">"Great — that makes my job faster. Xero holds the raw data. It won't tell you your flat white is underpriced by 40 cents, or your Tuesday roster is overstaffed by two hours, or a supplier quietly lifted prices 9%. That's what the audit does <i>with</i> your Xero data. You've already done the hard part — I just read what it's telling you."</p>
+  </div>
+
+  <div class="obj">
+    <div class="obj-head"><span class="num">5</span><h2>Too busy — "I'm flat out right now"</h2></div>
+    <p class="quote">"Come back in a few months, we're slammed."</p>
+    <div class="lbl">Reframe</div>
+    <p class="reframe">Busy and profitable are not the same. Being too busy to check where you're bleeding is exactly why the leak keeps growing. "Too busy" is usually the symptom, not the reason to wait.</p>
+    <div class="lbl">Say this</div>
+    <p class="say">"I hear that from every owner — and it's the tell. You're working flat out and the margin still isn't landing, because it's leaking somewhere you can't see while you're on the floor. Waiting three months doesn't pause the leak, it funds it. The audit is the thing that buys your time back."</p>
+  </div>
+
+  <div class="obj">
+    <div class="obj-head"><span class="num">6</span><h2>"I need to check with my partner"</h2></div>
+    <p class="quote">"I'll need to run it past my business partner."</p>
+    <div class="lbl">Reframe</div>
+    <p class="reframe">Reasonable — it's a joint call. Don't fight it. Arm the person in front of you so they sell it for you, and put the numbers in their hand.</p>
+    <div class="lbl">Say this</div>
+    <p class="say">"Makes total sense — it should be a shared call. Here's the one line to take to them: <i>$999 to find and fix the margin we're losing every month, with a report we keep and act on.</i> Want me to send a one-page summary you can forward, so they see the numbers themselves? Or easiest — grab 15 minutes with the three of us and I'll answer them direct."</p>
+  </div>
+
+  <div class="rule">
+    <div>◆</div>
+    <div><b>If nothing lands:</b> "No problem. Can I ask — is it the timing, the money, or you're just not convinced there's a leak to find? Whatever it is, tell me straight and I'll either fix it or leave you be." Naming the real objection out loud is where most deals actually turn.</div>
+  </div>
+
+  <p class="foot">Replace <span class="fill">[bracketed]</span> figures with your real average finding and turnaround before you use this on a call.</p>
+
+</div>
+</body>
+</html>
