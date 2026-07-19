@@ -446,11 +446,12 @@ const NAV=[
   {id:'outreach',ic:'✉',label:'Cold Outreach',group:'Growth'},
   {id:'igleads',ic:'⌾',label:'Cold Call · Instagram',group:'Growth'},
   {id:'contacts',ic:'☎',label:'Contacts',group:'Growth'},
-  {id:'score',ic:'▲',label:'Scoreboard',group:'Growth'}
+  {id:'score',ic:'▲',label:'Scoreboard',group:'Growth'},
+  {id:'marketing',ic:'◆',label:'Marketing',group:'Marketing'}
 ];
 function renderNav(){let html='',lastG=null;NAV.forEach(n=>{if(n.group!==lastG){html+=`<div class="navgroup">${n.group}</div>`;lastG=n.group;}html+=`<button class="${S.view===n.id?'active':''}" onclick="go('${n.id}')"><span class="ic">${n.ic}</span>${n.label}</button>`;});document.getElementById('nav').innerHTML=html;}
 function go(v){S.view=v;save();render();}
-const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,roadmap:vRoadmap,outreach:vOutreach,igleads:vIgleads,contacts:vContacts,score:vScore};
+const VIEWS={goals:vGoals,audit:vAudit,offer:vOffer,plan:vPlan,roadmap:vRoadmap,outreach:vOutreach,igleads:vIgleads,contacts:vContacts,score:vScore,marketing:vMarketing};
 function render(){renderNav();const fn=VIEWS[S.view]||vGoals;document.getElementById('view').innerHTML=fn();}
 function dateStr(){return new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});}
 function num(s){return parseFloat(String(s||'').replace(/[^0-9.]/g,''))||0;}
@@ -571,6 +572,45 @@ function vAudit(){
 
 function printHead(){return `<div class="print-only print-head"><span class="ph-brand">Leak · business hub</span><span class="ph-date">Prepared ${dateStr()}</span></div>`;}
 
+function vMarketing(){
+  return `
+  <div class="hero"><div class="hero-row">
+    <div><div class="kicker">Marketing</div><h1>Marketing system</h1>
+    <p>Your complete content operating system. The strategy, the voice, the look, and the tools that turn one idea into a finished post. Every file opens in a new tab and works on your phone.</p></div>
+    <button class="btn ghost pdf-btn" onclick="window.print()" title="Save this page as a PDF">⬇ Download PDF</button>
+  </div></div>
+  <div class="body">
+    ${printHead()}
+    <div class="card no-print" style="background:linear-gradient(135deg,var(--leak-light,#FBEDE6),var(--white) 70%)"><h3><span class="dot"></span>The Studio</h3><p class="hint">The post builder. Type an idea, get an on-brand design, drop in a photo, export the image. Opens the live app (sign in with your admin email). Goes live once the app is deployed.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <a class="btn primary" href="https://leak-rebuild.vercel.app/social-studio" target="_blank" rel="noopener">◭&nbsp; Launch the Studio</a>
+      </div></div>
+    <div class="card no-print" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 70%)"><h3><span class="dot"></span>Start here: the operating system</h3><p class="hint">How the whole marketing team runs: the Editorial Director decides the week, the Content Studio produces, the Brand Guardian approves. Read this first.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <a class="btn primary" href="Leak-Operating-System.html" target="_blank" rel="noopener">⬈&nbsp; Operating System</a>
+      </div></div>
+    <div class="card"><h3><span class="dot"></span>Brand foundations</h3><p class="hint">The three sources of truth: what Leak is, how you think and sound, and how everything looks. Every post is checked against these.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <a class="btn ghost" href="Leak-Product-Bible.html" target="_blank" rel="noopener">▤&nbsp; Product Bible</a>
+        <a class="btn ghost" href="Leak-Founder-Brain.html" target="_blank" rel="noopener">◆&nbsp; Founder Brain</a>
+        <a class="btn ghost" href="Leak-Creative-Operating-System.html" target="_blank" rel="noopener">◈&nbsp; Creative OS</a>
+      </div></div>
+    <div class="card"><h3><span class="dot"></span>Plan &amp; produce</h3><p class="hint">The 3-month calendar to post from, the playbook behind every post, and the brief generator that turns a rough idea into a ready brief.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <a class="btn ghost" href="3-month-content-calendar.html" target="_blank" rel="noopener">▥&nbsp; 3-month calendar</a>
+        <a class="btn ghost" href="Leak-Production-Playbook.html" target="_blank" rel="noopener">▦&nbsp; Production Playbook</a>
+        <a class="btn ghost" href="Leak-Brief-Generator.html" target="_blank" rel="noopener">✎&nbsp; Brief Generator</a>
+      </div></div>
+    <div class="card"><h3><span class="dot"></span>How to use it</h3><p class="hint">The shortest path from idea to posted.</p>
+      <ol style="margin:8px 0 0;padding-left:20px;color:var(--ink);font-size:15px;line-height:1.7">
+        <li>Pick an idea (or ask the Content Studio for this week's).</li>
+        <li>Build the post in the Studio, or have it made for you.</li>
+        <li>Drop in a photo, export the image.</li>
+        <li>Paste the caption, and post.</li>
+      </ol></div>
+  </div>`;
+}
+
 /* ---------- OFFER & PRICING ---------- */
 function vOffer(){
   const o=S.offer;
@@ -645,16 +685,6 @@ function vPlan(){
     <div class="card no-print" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 70%)"><h3><span class="dot"></span>Ready-to-show assets</h3><p class="hint">A polished business-model review deck for your accountant. On-brand, priced $499 for the first 5 founding clients then $999 standard. Opens in a new tab.</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
         <a class="btn primary" href="Leak-Business-Model-Review.pdf" target="_blank" rel="noopener">⬇&nbsp; Business model review (PDF)</a>
-      </div></div>
-    <div class="card no-print" style="background:linear-gradient(135deg,var(--brand-light),var(--white) 70%)"><h3><span class="dot"></span>Marketing &amp; brand system</h3><p class="hint">The full content operating system built for Leak: the strategy, the voice, the look, and the tools that turn an idea into a post. Each opens in a new tab.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
-        <a class="btn primary" href="Leak-Operating-System.html" target="_blank" rel="noopener">⬈&nbsp; Operating System</a>
-        <a class="btn ghost" href="Leak-Product-Bible.html" target="_blank" rel="noopener">▤&nbsp; Product Bible</a>
-        <a class="btn ghost" href="Leak-Founder-Brain.html" target="_blank" rel="noopener">◆&nbsp; Founder Brain</a>
-        <a class="btn ghost" href="Leak-Creative-Operating-System.html" target="_blank" rel="noopener">◈&nbsp; Creative OS</a>
-        <a class="btn ghost" href="Leak-Production-Playbook.html" target="_blank" rel="noopener">▦&nbsp; Production Playbook</a>
-        <a class="btn ghost" href="3-month-content-calendar.html" target="_blank" rel="noopener">▥&nbsp; 3-month calendar</a>
-        <a class="btn ghost" href="Leak-Brief-Generator.html" target="_blank" rel="noopener">✎&nbsp; Brief Generator</a>
       </div></div>
     <div class="concept-wrap"><div class="kicker">In one line</div>
       <h3>Leak, if you only had a sentence.</h3>
