@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leak · Operating System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --purple:#6D28D9;--purple-dark:#5B21B6;--purple-deep:#4C1D95;--violet:#7C3AED;--violet-light:#8B5CF6;
+    --lavender:#EDE9FE;--lavender-soft:#F5F3FF;--paper:#FAF9F7;--white:#FFFFFF;--ink:#101418;
+    --grey-600:#4B5563;--grey-500:#6B7280;--grey-400:#9CA3AF;--grey-200:#E5E7EB;--leak:#C2410C;--line:#ECEAE6;
+    --shadow-card:0 1px 2px rgb(28 33 40 / .04),0 6px 20px rgb(28 33 40 / .05);
+    --shadow-lift:0 4px 12px rgb(28 33 40 / .06),0 18px 46px rgb(28 33 40 / .09);
+    --r-md:14px;--r-lg:20px;--r-xl:26px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 40px}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-400)}
+  h1.display{font-size:clamp(42px,7vw,84px);font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:0}
+  h2.sec{font-size:clamp(27px,4vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:0 0 4px}
+  h3{font-size:19px;font-weight:800;letter-spacing:-.01em;margin:26px 0 8px}
+  h4{font-size:15px;font-weight:700;margin:0 0 5px;color:var(--ink)}
+  p{font-size:16px;color:var(--grey-600);margin:0 0 13px;max-width:74ch}
+  p.lead{font-size:19px;color:var(--ink);font-weight:500}
+  strong{color:var(--ink);font-weight:700}
+  .accent{color:var(--purple)} .dot{color:var(--purple)}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:var(--lavender-soft);color:var(--purple-deep);border-radius:6px;padding:2px 8px}
+
+  .cover{min-height:88vh;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 130% at 0% 0%,#F1EDFC 0%,var(--paper) 60%)}
+  .cover .lockup{display:flex;align-items:center;gap:13px;margin-bottom:34px}
+  .cover .word{font-size:30px;font-weight:800;letter-spacing:-.02em}
+  .cover h1{max-width:17ch}
+  .cover .sub{font-size:20px;color:var(--grey-600);max-width:58ch;margin-top:20px}
+  .cover .meta{margin-top:38px;display:flex;gap:9px;flex-wrap:wrap}
+  .tag{font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--purple-dark);background:var(--lavender-soft);border-radius:999px;padding:6px 13px}
+
+  section{padding:66px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+  .sec-num{font-size:14px;font-weight:800;color:var(--purple);font-variant-numeric:tabular-nums}
+  .sec-intro{font-size:18px;color:var(--grey-600);max-width:76ch;margin:8px 0 26px}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}.wrap{padding:0 22px}}
+  .card{background:var(--white);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--shadow-card);margin:12px 0}
+  .card.wash{background:var(--lavender-soft)} .card.lift{box-shadow:var(--shadow-lift)}
+  .card p{font-size:14.5px;margin-bottom:0}
+  ul.clean{list-style:none;padding:0;margin:8px 0}
+  ul.clean li{position:relative;padding:6px 0 6px 24px;font-size:15.5px;color:var(--grey-600)}
+  ul.clean li::before{content:"";position:absolute;left:3px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--purple)}
+  ul.clean li b{color:var(--ink)}
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+  ol.steps li{position:relative;padding:8px 0 8px 44px;font-size:15.5px;color:var(--grey-600);border-top:1px solid var(--line)}
+  ol.steps li:first-child{border-top:0}
+  ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:8px;width:26px;height:26px;border-radius:8px;background:var(--lavender-soft);color:var(--purple);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.steps li b{color:var(--ink)}
+
+  /* Org chart */
+  .org{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+  .node{background:var(--white);border-radius:var(--r-md);box-shadow:var(--shadow-card);padding:12px 20px;text-align:center;min-width:150px}
+  .node .t{font-weight:800;font-size:15px}
+  .node .r{font-size:12px;color:var(--grey-500)}
+  .node.ceo{background:linear-gradient(180deg,#7c3aed,#6d28d9);color:#fff}
+  .node.ceo .r{color:#DDD6FE}
+  .node.star{box-shadow:0 0 0 2px var(--purple),var(--shadow-card)}
+  .stem{width:2px;height:22px;background:var(--grey-200)}
+  .rowline{width:78%;height:2px;background:var(--grey-200);margin:0 auto}
+  .team{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;margin-top:0}
+  @media (max-width:820px){.team{grid-template-columns:repeat(2,1fr)}}
+  .team .node{min-width:0;text-align:left}
+  .team .node .r{margin-top:2px}
+  .team .stemwrap{display:flex;justify-content:center}
+
+  .io{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+  @media (max-width:820px){.io{grid-template-columns:1fr}}
+  .io .b{background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-card);padding:18px 20px}
+  .io .b h4{color:var(--purple)}
+  .io .b.no h4{color:var(--leak)}
+
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:14px 0}
+  .flow .f{flex:1;min-width:150px;background:var(--white);border-radius:var(--r-md);box-shadow:var(--shadow-card);padding:14px 16px}
+  .flow .f .n{font-size:11px;font-weight:800;color:var(--purple);letter-spacing:.06em;text-transform:uppercase}
+  .flow .f h4{margin:5px 0 3px}
+  .flow .f p{font-size:13px;margin:0}
+  .flow .arw{display:flex;align-items:center;padding:0 8px;color:var(--grey-400);font-weight:800;font-size:20px}
+  @media (max-width:820px){.flow .arw{transform:rotate(90deg);padding:6px 0;width:100%;justify-content:center}}
+
+  .manifest{columns:2;column-gap:16px;margin:10px 0}
+  @media (max-width:820px){.manifest{columns:1}}
+  .manifest .m{break-inside:avoid;background:var(--white);border-radius:var(--r-md);box-shadow:var(--shadow-card);padding:12px 15px;margin-bottom:12px}
+  .manifest .m b{font-size:14px}
+  .manifest .m p{font-size:12.5px;margin:3px 0 0}
+
+  .cmd{background:var(--ink);border-radius:var(--r-lg);padding:16px 20px;margin:12px 0;color:#EDE9FE;font-family:ui-monospace,Menlo,monospace;font-size:14.5px}
+  .cmd .p{color:var(--violet-light)}
+  .note{font-size:13.5px;color:var(--grey-500)}
+  .footer{padding:52px 0 84px;color:var(--grey-400);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="wrap">
+    <div class="lockup">
+      <svg width="42" height="42" viewBox="0 0 48 48" fill="none"><path d="M34.9 18.4 A15 15 0 1 0 31.4 34.8" stroke="url(#g)" stroke-width="6.5" stroke-linecap="round"/><circle cx="34.6" cy="27.2" r="4.7" fill="#5B21B6"/><defs><linearGradient id="g" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#8B5CF6"/><stop offset=".5" stop-color="#7C3AED"/><stop offset="1" stop-color="#6D28D9"/></linearGradient></defs></svg>
+      <span class="word">Leak<span class="dot">.</span></span>
+    </div>
+    <p class="kicker" style="margin-bottom:18px">Operating System · v1.0</p>
+    <h1 class="display">Your in-house marketing team, on call.</h1>
+    <p class="sub">You built the departments. This is the org that runs them: an Editorial Director that decides what deserves attention, and a Content Studio that turns a single sentence into a finished campaign. Your only job is to say what happened.</p>
+    <div class="meta">
+      <span class="tag">The AI team</span><span class="tag">Editorial Director</span><span class="tag">Content Studio (Producer)</span><span class="tag">How you run it</span>
+    </div>
+  </div>
+</div>
+
+<!-- 01 THE TEAM -->
+<section id="team">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><p class="kicker">The team</p></div>
+    <h2 class="sec">One CEO. One instruction: tell it what happened.</h2>
+    <p class="sec-intro">Everything you've built is a department. Two roles connect them into a working newsroom: the Editorial Director decides, the Content Studio produces. You are the CEO, and your job shrinks to a sentence.</p>
+
+    <div class="org">
+      <div class="node ceo"><div class="t">You (CEO)</div><div class="r">"Here's what happened."</div></div>
+      <div class="stem"></div>
+      <div class="node star"><div class="t">Editorial Director ★</div><div class="r">Decides what deserves attention this week</div></div>
+      <div class="stem"></div>
+      <div class="node"><div class="t">Content Studio</div><div class="r">Turns each priority into a finished campaign</div></div>
+      <div class="stem"></div>
+      <div class="rowline"></div>
+      <div class="stemwrap"><div class="stem"></div></div>
+      <div class="team">
+        <div class="node"><div class="t">Product Bible</div><div class="r">What the product is, and why</div></div>
+        <div class="node"><div class="t">Founder Brain</div><div class="r">How Mel thinks and sounds</div></div>
+        <div class="node"><div class="t">Creative Director</div><div class="r">How it looks (Creative OS)</div></div>
+        <div class="node"><div class="t">Brand Guardian</div><div class="r">The pre-publish gate</div></div>
+        <div class="node"><div class="t">Production Playbook</div><div class="r">The reference library of what works</div></div>
+        <div class="node"><div class="t">Product Marketing</div><div class="r">Feature launches, positioning</div></div>
+        <div class="node"><div class="t">Growth Strategist</div><div class="r">Funnel, offers, distribution</div></div>
+        <div class="node"><div class="t">Brief Generator</div><div class="r">Rough idea to a brief, on demand</div></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:18px">The bottom row already exists as documents and tools. This system adds the two roles at the top that turn a pile of departments into a team that ships.</p>
+  </div>
+</section>
+
+<!-- 02 EDITORIAL DIRECTOR -->
+<section id="editorial">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><p class="kicker">The Editorial Director ★</p></div>
+    <h2 class="sec">It doesn't make content. It decides what matters.</h2>
+    <p class="sec-intro">The difference between a content account and an editorial one: a content account waits for ideas; an editorial one sets the agenda. Every week the Editorial Director reads the world and decides the few conversations Leak should lead, then briefs the Content Studio to execute them.</p>
+
+    <h3>The signals it reads</h3>
+    <div class="grid g2">
+      <div class="card"><h4>The calendar</h4><p>Regulatory dates (the 1 October surcharge ban, wage and super changes), seasonal trading (footy finals, Father's Day, Christmas, EOFY), and industry moments. Timeliness is leverage.</p></div>
+      <div class="card"><h4>The product</h4><p>Anything Mel shipped or changed. A new feature, a better report, a fixed workflow. Every build is a potential launch theme.</p></div>
+      <div class="card"><h4>The customers</h4><p>Patterns across real audits. If three reports all surface supplier creep, that stops being a post and becomes a campaign. (Fed by Mel or the data.)</p></div>
+      <div class="card"><h4>The feed</h4><p>Gaps and momentum in what's already published: an objection that keeps coming up, a post that overperformed, a pillar that's gone quiet.</p></div>
+    </div>
+
+    <h3>How it ranks a week</h3>
+    <p>Every candidate conversation is scored on four axes, and the top five make the agenda:</p>
+    <ul class="clean">
+      <li><b>Timeliness.</b> Is there a reason it has to be this week? A deadline, a season, a fresh change.</li>
+      <li><b>Commercial impact.</b> Does it move trust, bookings or the funnel, not just reach?</li>
+      <li><b>Brand fit.</b> Is it a conversation only Leak can credibly lead?</li>
+      <li><b>Balance.</b> Does the week span value, proof and offer, rather than three sells in a row?</li>
+    </ul>
+
+    <div class="io">
+      <div class="b"><h4>What it takes in</h4><p style="font-size:14px;color:var(--grey-600);margin:6px 0 0">The date, the calendar, anything Mel reports, and the state of the feed.</p></div>
+      <div class="b"><h4>What it hands over</h4><p style="font-size:14px;color:var(--grey-600);margin:6px 0 0">A one-page <b>Weekly Agenda</b>: the five conversations to lead, each with a rationale and a one-line brief, ranked. It never writes the content. It decides and briefs.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 CONTENT STUDIO -->
+<section id="studio">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><p class="kicker">The Content Studio · Creative Producer mode</p></div>
+    <h2 class="sec">One input. A finished campaign.</h2>
+    <p class="sec-intro">The Content Studio is no longer a copywriter waiting for a spec. It is a producer. It never asks what format, what platform, or how many slides. It reads the four bibles, decides the campaign, and produces every asset.</p>
+
+    <div class="io">
+      <div class="b no"><h4>It never asks</h4>
+        <ul class="clean" style="margin:6px 0 0">
+          <li>What format do you want?</li><li>Which platform?</li><li>How many slides?</li><li>Should this be a Reel or a carousel?</li>
+        </ul>
+      </div>
+      <div class="b"><h4>It decides</h4>
+        <ul class="clean" style="margin:6px 0 0">
+          <li>The campaign concept and hero message.</li><li>The best format and the platforms.</li><li>Every asset the idea deserves.</li><li>What still needs a photo or a screenshot.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>The pipeline it runs, every time</h3>
+    <ol class="steps">
+      <li>Read the <b>Product Bible</b> (what's true), the <b>Founder Brain</b> (the voice), the <b>Creative OS</b> (the look) and the <b>Production Playbook</b> (what works).</li>
+      <li>Generate a <b>Creative Brief</b>: goal, audience, awareness, emotion, message, proof.</li>
+      <li>Decide the <b>campaign</b>: the single idea, the hero message, the arc.</li>
+      <li>Produce <b>every required asset</b>, then run the <b>Brand Guardian</b> checklist. If anything weakens Leak, it is rejected and improved before you see it.</li>
+    </ol>
+
+    <h3>The output manifest</h3>
+    <p>From one input, the Studio returns a complete campaign package:</p>
+    <div class="manifest">
+      <div class="m"><b>Campaign concept</b><p>The single idea and why it matters now.</p></div>
+      <div class="m"><b>Hero message</b><p>The one line the whole campaign hangs on.</p></div>
+      <div class="m"><b>Primary content</b><p>The lead asset, fully designed and written.</p></div>
+      <div class="m"><b>Repurposed content</b><p>The same idea recut for every channel that suits it.</p></div>
+      <div class="m"><b>Captions</b><p>Instagram, in the founder voice.</p></div>
+      <div class="m"><b>Stories</b><p>A vertical sequence with the CTA in the safe band.</p></div>
+      <div class="m"><b>LinkedIn</b><p>Rewritten for the professional feed, no emojis.</p></div>
+      <div class="m"><b>Email</b><p>Subject and angle for the list.</p></div>
+      <div class="m"><b>Website announcement</b><p>Where a launch needs a page or banner.</p></div>
+      <div class="m"><b>CTA</b><p>The single next action, matched to the funnel stage.</p></div>
+      <div class="m"><b>Visual production guide</b><p>Frame-by-frame design specs, in the six modes.</p></div>
+      <div class="m"><b>Photography direction</b><p>Or the exact screenshots the product needs.</p></div>
+      <div class="m"><b>Shot list</b><p>What to capture, batched for one sitting.</p></div>
+      <div class="m"><b>Thumbnail concept</b><p>For any Reel or video.</p></div>
+      <div class="m"><b>Follow-up content</b><p>The next posts this campaign should seed.</p></div>
+      <div class="m"><b>Final QA</b><p>The Brand Guardian pass, with any fix noted.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 THE FLOW -->
+<section id="flow">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><p class="kicker">The flow</p></div>
+    <h2 class="sec">From a sentence to published, hands-off.</h2>
+    <div class="flow">
+      <div class="f"><div class="n">You</div><h4>"Here's what happened."</h4><p>A feature, an insight, a customer pattern, a photo.</p></div>
+      <div class="arw">→</div>
+      <div class="f"><div class="n">Editorial Director</div><h4>Decides</h4><p>Is this this week's priority? Where does it sit in the agenda?</p></div>
+      <div class="arw">→</div>
+      <div class="f"><div class="n">Content Studio</div><h4>Produces</h4><p>Brief, campaign, every asset, in voice and on brand.</p></div>
+      <div class="arw">→</div>
+      <div class="f"><div class="n">Brand Guardian</div><h4>Approves</h4><p>Passes the checklist, or it goes back and improves.</p></div>
+      <div class="arw">→</div>
+      <div class="f"><div class="n">You</div><h4>Publish</h4><p>Attach the photo. Hit post.</p></div>
+    </div>
+    <div class="card wash" style="margin-top:18px">
+      <h4>Worked example: "We just added supplier invoice tracking."</h4>
+      <p style="margin-bottom:0">The Editorial Director slots it as a launch theme for the week. The Content Studio returns: a launch campaign concept, an Instagram carousel, a Reel script, a LinkedIn article, an email announcement, a story sequence, a website announcement, the exact product screenshots required, a shot list, a thumbnail concept, the CTA, and the follow-up posts that extend it. You never asked for any of it by name.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 HOW YOU RUN IT -->
+<section id="run">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><p class="kicker">How you run it</p></div>
+    <h2 class="sec">Two commands. That's the whole job.</h2>
+    <div class="cmd"><span class="p">Mel &gt;</span> Run the Content Studio: we just added supplier invoice tracking.</div>
+    <p>The Studio produces the full campaign package above, deciding every format and platform itself.</p>
+    <div class="cmd"><span class="p">Mel &gt;</span> Run the Editorial Director.</div>
+    <p>It returns this week's agenda: the five conversations Leak should lead, ranked, each with a rationale and a brief ready to hand to the Studio.</p>
+
+    <h3>The weekly rhythm</h3>
+    <ul class="clean">
+      <li><b>Monday:</b> the Editorial Director sets the agenda for the week.</li>
+      <li><b>Through the week:</b> the Content Studio executes each priority into finished assets.</li>
+      <li><b>Anytime something happens:</b> tell the Studio in one sentence; it produces, the Guardian approves, you publish.</li>
+    </ul>
+    <div class="card wash">
+      <h4>Make it automatic</h4>
+      <p style="margin-bottom:0">The Monday agenda can run as a scheduled task, so a fresh set of priorities is waiting for you every Monday morning without you asking. That is the moment this stops feeling like a tool and starts feeling like a team.</p>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  <div class="wrap">
+    <div class="lockup" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <svg width="24" height="24" viewBox="0 0 48 48" fill="none"><path d="M34.9 18.4 A15 15 0 1 0 31.4 34.8" stroke="#6D28D9" stroke-width="6.5" stroke-linecap="round"/><circle cx="34.6" cy="27.2" r="4.7" fill="#5B21B6"/></svg>
+      <span style="font-weight:800;font-size:16px">Leak<span style="color:#6D28D9">.</span></span>
+    </div>
+    Operating System · v1.0 · The team that runs the departments. Editorial Director decides; Content Studio produces; Brand Guardian approves.
+  </div>
+</div>
+
+</body>
+</html>

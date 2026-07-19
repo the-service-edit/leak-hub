@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leak · Creative Brief Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --purple:#6D28D9;--purple-dark:#5B21B6;--purple-deep:#4C1D95;--violet:#7C3AED;--violet-light:#8B5CF6;
+    --lavender:#EDE9FE;--lavender-soft:#F5F3FF;--paper:#FAF9F7;--white:#FFFFFF;--ink:#101418;
+    --grey-600:#4B5563;--grey-500:#6B7280;--grey-400:#9CA3AF;--grey-200:#E5E7EB;--leak:#C2410C;--line:#ECEAE6;
+    --shadow-card:0 1px 2px rgb(28 33 40 / .04),0 6px 20px rgb(28 33 40 / .05);
+    --shadow-lift:0 4px 12px rgb(28 33 40 / .06),0 18px 46px rgb(28 33 40 / .09);
+    --r-md:14px;--r-lg:20px;--r-xl:26px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-400)}
+  .lockup{display:flex;align-items:center;gap:11px}
+  .word{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .dot{color:var(--purple)}
+  header{padding:34px 0 8px;background:radial-gradient(120% 130% at 0% 0%,#F1EDFC 0%,var(--paper) 55%)}
+  header h1{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin:22px 0 8px;max-width:20ch}
+  header p{font-size:17px;color:var(--grey-600);max-width:60ch;margin:0 0 26px}
+
+  .panel{background:var(--white);border-radius:var(--r-xl);box-shadow:var(--shadow-lift);padding:24px;margin:8px 0 26px}
+  label.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-400);margin:0 0 6px}
+  textarea,select{width:100%;font-family:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--grey-200);border-radius:var(--r-md);padding:13px 14px;outline:none;transition:border-color .15s,box-shadow .15s}
+  textarea{min-height:74px;resize:vertical}
+  textarea:focus,select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(109,40,217,.12)}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+  @media (max-width:680px){.row{grid-template-columns:1fr}}
+  .actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  button{font-family:inherit;font-weight:700;font-size:15px;border:0;border-radius:var(--r-md);padding:13px 20px;cursor:pointer;transition:transform .12s,box-shadow .15s,background .15s}
+  .btn-primary{background:linear-gradient(180deg,#7c3aed,#6d28d9);color:#fff;box-shadow:var(--shadow-card)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:var(--shadow-lift)}
+  .btn-ghost{background:var(--white);color:var(--purple);box-shadow:var(--shadow-card)}
+  .btn-ghost:hover{transform:translateY(-1px)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .chips span{font-size:12.5px;font-weight:600;color:var(--grey-600);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;transition:all .12s}
+  .chips span:hover{border-color:var(--purple);color:var(--purple)}
+
+  #out{display:none}
+  .brief{background:var(--white);border-radius:var(--r-xl);box-shadow:var(--shadow-lift);overflow:hidden;margin-bottom:20px}
+  .brief .top{padding:20px 26px;background:linear-gradient(135deg,#F1EDFC,#FAF9F7 75%);border-bottom:1px solid var(--line)}
+  .brief .top .k{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
+  .brief .top h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:4px 0 2px}
+  .brief .top .sub{font-size:14px;color:var(--grey-500)}
+  .fields{padding:8px 26px 20px}
+  .f{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .f:last-child{border-bottom:0}
+  @media (max-width:680px){.f{grid-template-columns:1fr;gap:3px}}
+  .f .l{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--grey-400);padding-top:2px}
+  .f .v{font-size:15.5px;color:var(--ink)}
+  .f .v.muted{color:var(--grey-600);font-size:14.5px}
+  .f .v b{color:var(--purple-dark)}
+  .hooks .h{font-size:16px;font-weight:600;color:var(--ink);padding:5px 0 5px 16px;border-left:3px solid var(--purple);margin:6px 0}
+  .build{background:var(--lavender-soft);border-radius:var(--r-lg);padding:14px 18px;margin:2px 0 0;font-size:14px;color:var(--purple-deep)}
+  .build b{color:var(--purple-dark)}
+  .tag{display:inline-block;font-size:12px;font-weight:600;color:var(--grey-600);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px;margin:0 4px 4px 0}
+  .copybar{display:flex;gap:10px;align-items:center;margin-bottom:34px}
+  .note{font-size:13px;color:var(--grey-400)}
+  .workflow{border-top:1px solid var(--line);padding:26px 0 70px;color:var(--grey-500);font-size:13.5px}
+  .workflow b{color:var(--ink)}
+  .workflow ol{margin:8px 0 0;padding-left:20px}
+  .workflow li{margin-bottom:3px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="lockup">
+      <svg width="34" height="34" viewBox="0 0 48 48" fill="none"><path d="M34.9 18.4 A15 15 0 1 0 31.4 34.8" stroke="url(#g)" stroke-width="6.5" stroke-linecap="round"/><circle cx="34.6" cy="27.2" r="4.7" fill="#5B21B6"/><defs><linearGradient id="g" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#8B5CF6"/><stop offset=".5" stop-color="#7C3AED"/><stop offset="1" stop-color="#6D28D9"/></linearGradient></defs></svg>
+      <span class="word">Leak<span class="dot">.</span></span>
+    </div>
+    <p class="kicker" style="margin-top:20px">Creative Brief Generator</p>
+    <h1>Give me a rough idea. Get a real brief.</h1>
+    <p>Type a half-formed thought. This turns it into a professional creative brief, on-brand and grounded in the Leak system, before a single word of content gets written. Bring the brief back to the Studio and it becomes production-ready content.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <label class="fl" for="idea">Your rough idea</label>
+    <textarea id="idea" placeholder="e.g. a post about coffee prices"></textarea>
+    <div class="row">
+      <div>
+        <label class="fl" for="goal">Goal</label>
+        <select id="goal">
+          <option value="">Auto (pick for me)</option>
+          <option>Education</option><option>Awareness</option><option>Trust</option>
+          <option>Lead generation</option><option>Conversion</option><option>Launch</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl" for="format">Format</label>
+        <select id="format">
+          <option value="">Auto (pick for me)</option>
+          <option>Carousel</option><option>Single image</option><option>Reel</option>
+          <option>Story</option><option>LinkedIn</option><option>Email</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl" for="aware">Awareness</label>
+        <select id="aware">
+          <option value="">Auto (pick for me)</option>
+          <option>Unaware</option><option>Problem aware</option><option>Solution aware</option>
+          <option>Product aware</option><option>Most aware</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" onclick="run()">Generate brief</button>
+      <button class="btn-ghost" onclick="another()">Another angle</button>
+      <button class="btn-ghost" onclick="copyBrief()" id="copyBtn">Copy brief</button>
+    </div>
+    <div class="chips" id="examples"></div>
+  </div>
+
+  <div id="out"></div>
+
+  <div class="workflow">
+    <b>This is Steps 1 to 3 of the Studio workflow.</b> The generator sets the goal, the concept and the direction. To finish a piece, bring this brief to the Studio and it runs the rest:
+    <ol>
+      <li>Design every frame (layout, hierarchy, type, colour, photography, motion).</li>
+      <li>Curate any photos you upload (the strongest one, crops, edits, sequencing).</li>
+      <li>Write the copy in every format (caption, LinkedIn, email, blog).</li>
+      <li>Audit against the Brand System, Creative OS, Playbook and Product facts. If it weakens Leak, reject and improve.</li>
+    </ol>
+    <p class="note" style="margin-top:14px">Built from the Leak system: the content pillars, real sourced proof (ATO benchmarks, the 2026 wage/super/surcharge changes), the Creative OS visual direction and the Founder Brain voice. It runs entirely in your browser. It is a smart starting brief, not a live writer; treat its first draft as a strong opening move to sharpen.</p>
+  </div>
+</div>
+
+<script>
+/* ================= LEAK KNOWLEDGE BASE ================= */
+/* Each pillar carries the on-brand answer for every brief field. */
+const HASH = {
+  money:"#cafeprofits #foodcostcontrol #hospitalityfinance #profitmargins #cogs #cafebusiness #smallbusinessfinance #hospitalityaustralia",
+  owner:"#cafeowner #hospitalityaustralia #cafebusiness #hospolife #smallbusinessaustralia #cafelife #hospitalityowner #ausbusiness",
+  proof:"#profitaudit #cafebusiness #hospitalityaustralia #cafeowner #smallbusinessaus #hospomarketing #foodcost #cafeconsulting",
+  founder:"#hospitalitylife #cafeowners #behindthecounter #21yearsinhospo #hospitalityownership #cafeaustralia #smallbusinessstory #hospolife"
+};
+const TIME = {
+  "Reel":"Tue to Thu, 6:00 to 7:00am or 8:00 to 9:00pm",
+  "Carousel":"Weekdays, 11:30am to 1:00pm or 7:30pm",
+  "Single image":"Weekdays, 11:30am to 1:00pm or 7:30pm",
+  "Story":"Daytime, around service. Keep key copy in the safe band",
+  "LinkedIn":"Tue to Thu, 7:30 to 8:30am",
+  "Email":"Tue or Thu, 6:30am"
+};
+
+const PILLARS = [
+  {
+    id:"supplier", campaign:"Profit Leaks", keywords:["supplier","invoice","price","prices","cost of goods","cogs","creep","wholesale","delivery","vendor","coffee price","bean","ingredient","drift"],
+    objective:"Education", awareness:"Problem aware", emotion:"“I didn’t know that.”",
+    message:"Costs don’t kill profit overnight. Tiny increases compound, invoice by invoice, until this year’s numbers look nothing like last year’s.",
+    proof:"ATO: cafés typically run 33 to 38% cost of goods. Illustrative: a $20-a-day drift compounds to roughly $7,300 a year.",
+    format:"Carousel", repurpose:["Story","LinkedIn","Email"], mode:"Editorial", template:"Leak breakdown / statement", hbucket:"money",
+    visual:"Editorial, purple on paper. A spiked stack of supplier invoices or a delivery in crates. The drift line motif in leak-orange. Documentary, unstyled.",
+    cta:"Check your real food cost free → leak.cafe/tools", metric:"Saves, shares to a business partner, tool clicks",
+    hooks:["No supplier emails you to say prices went up 4%.","The drift is the leak.","A 4% rise doesn’t feel like anything. Until you annualise it."]
+  },
+  {
+    id:"labour", campaign:"Profit Leaks", keywords:["labour","labor","roster","rostering","wage","wages","staff","shift","payroll","hours","overtime","splh"],
+    objective:"Education", awareness:"Problem aware", emotion:"“That’s my Tuesday.”",
+    message:"Rostering by feel is a guess with a wage bill attached. Most labour leaks are a timing problem, not a headcount one.",
+    proof:"ATO: cafe labour typically runs 27 to 35%. Award wages rose 4.75% on 1 July 2026 (minimum now $26.44/hr).",
+    format:"Reel", repurpose:["Carousel","LinkedIn"], mode:"Dark Premium", template:"Photo cover", hbucket:"money",
+    visual:"Dark-premium photo. A quiet room mid-shift with too many staff on, or the roster on the wall. Honest, not flattering.",
+    cta:"See a sample audit → leak.cafe", metric:"Saves, comments of recognition, shares",
+    hooks:["Rostering by feel is a guess with a wage bill attached.","Three on the floor. Four tables in the room.","Labour % tells you the season. Sales per labour hour tells you the shift."]
+  },
+  {
+    id:"menu", campaign:"Profit Leaks", keywords:["menu","dish","recipe","best seller","bestseller","portion","plate","special","pricing your"],
+    objective:"Education", awareness:"Problem aware", emotion:"“Wait, is my best seller losing money?”",
+    message:"Popularity and profitability are different columns. A dish priced when inputs cost less can quietly go underwater, and volume scales the problem.",
+    proof:"Menus priced once rarely get re-costed as inputs rise. The free menu calculator sizes the real margin per dish, waste and yield included.",
+    format:"Carousel", repurpose:["Reel","Story"], mode:"Clean White", template:"Checklist / statement", hbucket:"money",
+    visual:"Clean-white or soft-gradient. The menu board shot like a customer sees it, or a hero dish top-down on a working bench.",
+    cta:"Price your menu free → leak.cafe/tools", metric:"Saves, tool clicks, comments naming dishes",
+    hooks:["Your best-selling item might be losing you money.","These prices were set when things cost less.","Every item on your menu is one of four things."]
+  },
+  {
+    id:"waste", campaign:"Profit Leaks", keywords:["waste","yield","trim","spoilage","prep","avocado","offcut","over-order","overorder","bin"],
+    objective:"Education", awareness:"Problem aware", emotion:"“I’m literally paying for that.”",
+    message:"You cost the whole ingredient. You serve part of it. Price the usable weight, not the raw weight, or every serve looks cheaper on paper than it is.",
+    proof:"Illustrative: skin and stone are roughly a third of an avocado. Cost on raw weight and every serve is about 33% undercosted.",
+    format:"Reel", repurpose:["Single image","Story"], mode:"Dark Premium", template:"Photo cover", hbucket:"money",
+    visual:"Dark-premium photo. An avocado halved on the prep bench with the skin and stone beside it, or a tub of trim. Real, end-of-prep.",
+    cta:"Check your real food cost free → leak.cafe/tools", metric:"Shares, saves, tool clicks",
+    hooks:["You’re costing the whole avocado. You serve about two-thirds of it.","You bought all of it. You served some of it.","The extra handful nobody costed."]
+  },
+  {
+    id:"benchmark", campaign:"How Do You Compare", keywords:["benchmark","average","compare","comparison","ato","industry","standard","percentage","typical","normal"],
+    objective:"Awareness", awareness:"Problem aware", emotion:"“Where do I actually sit?”",
+    message:"The average Australian cafe spends about 36% on cost of goods. Most owners can’t say where they sit. A couple of points either way is thousands a year.",
+    proof:"ATO Small Business Benchmarks 2023-24 (published 16 March 2026): cafe COGS averages 36% (33 to 38%), labour 27 to 35%.",
+    format:"Single image", repurpose:["Carousel","LinkedIn","Email"], mode:"Data-Led", template:"Metric card", hbucket:"money",
+    visual:"Data-led. One oversized tabular number (36%) as the hero, plain label, the ATO source line always visible. Restrained, credible.",
+    cta:"Find your number free → leak.cafe/tools", metric:"Saves, link clicks, comments guessing their number",
+    hooks:["The average Aussie cafe spends 36% on cost of goods. Do you know yours?","33 to 38%. That’s the ATO’s range. Where do you sit?","There’s no gold star for a number. Not knowing yours is the only wrong answer."]
+  },
+  {
+    id:"regulatory", campaign:"The 2026 Squeeze", keywords:["super","superannuation","minimum wage","award","surcharge","rba","fair work","july","october","law","legislation","reform","payday","card fee","regulation"],
+    objective:"Education", awareness:"Solution aware", emotion:"“I need to get ahead of this.”",
+    message:"Your costs went weekly, so your numbers have to as well. Three regulated cost rises are squeezing cafe margins this year.",
+    proof:"Verified: payday super live 1 July 2026 (super every payday, within 7 business days); award wages +4.75% from 1 July (min $26.44/hr); RBA card-surcharge ban from 1 October 2026.",
+    format:"Carousel", repurpose:["Reel","LinkedIn","Email"], mode:"Data-Led", template:"Metric card / carousel", hbucket:"money",
+    visual:"Data-led or dark-premium. The everyday object that carries the rule: an eftpos terminal, a payslip, a calendar to the date. Newsy but calm, no alarmism.",
+    cta:"Check where you stand free → leak.cafe/tools", metric:"Saves, shares, link clicks, bookings",
+    hooks:["From 1 October, you can’t surcharge card payments anymore.","Award wages went up 4.75% on 1 July. If your roster didn’t change, your labour % did.","Your costs went weekly. Your numbers have to as well."]
+  },
+  {
+    id:"founder", campaign:"Meet Mel", keywords:["founder","story","mel","journey","why leak","started","personal","behind","owner story","my story"],
+    objective:"Trust", awareness:"Unaware", emotion:"“She’s been where I am.”",
+    message:"Built by someone who has stood behind the machine. I lost money I couldn’t see, so I built the thing that finds it.",
+    proof:"21 years in hospitality, almost ten of them owning cafes. Every audit finding is human-reviewed.",
+    format:"Reel", repurpose:["Story","LinkedIn"], mode:"Editorial", template:"Founder story", hbucket:"founder",
+    visual:"Editorial, warm. Mel to camera or mid-task, cafe soft behind her. Natural side-light, real, never a corporate headshot. Drop the portrait into the founder photo panel.",
+    cta:"See a sample audit → leak.cafe", metric:"Follows, profile visits, saves, DMs",
+    hooks:["I’ve been in hospitality since I was 13. I still couldn’t see where the money went.","The month I read my own invoices, I stopped recognising my own costs.","I built the tool I needed at 4pm on a Monday, staring at a balance that didn’t add up."]
+  },
+  {
+    id:"tool", campaign:"Free Tools", keywords:["tool","free","checker","calculator","quiz","template","try","test yourself","cogs check"],
+    objective:"Lead generation", awareness:"Solution aware", emotion:"“I could just check that now.”",
+    message:"Know your real number in a few minutes, free. The same costing engine that sits inside a full audit, given away because the fastest way to show what we do is to let you use it.",
+    proof:"Free, no login, numbers stay in your browser. Benchmarked against real ATO cafe figures.",
+    format:"Reel", repurpose:["Single image","Story"], mode:"Soft Gradient", template:"Statement", hbucket:"money",
+    visual:"Soft-gradient, bright, frictionless. A screen-record of the tool over a cafe-counter cutaway. Purple accent on the CTA only.",
+    cta:"Check your real food cost free → leak.cafe/tools", metric:"Link clicks, tool completions, DMs",
+    hooks:["You can tell me your rent to the dollar. Can you tell me your food cost?","Know your real food cost in about three minutes. Free.","Put in the recipe. See the real margin come out."]
+  },
+  {
+    id:"offer", campaign:"Founding Five", keywords:["audit","book","booking","offer","guarantee","founding","499","999","buy","sign up","price of","how much","cost of audit"],
+    objective:"Conversion", awareness:"Product aware", emotion:"“The risk is on them, not me.”",
+    message:"A profit audit with a guarantee. Twice the fee found in opportunities, or you don’t pay. Never another subscription.",
+    proof:"$499 for the first 5 founding clients, then $999. Three months of your files, human-reviewed, every leak sized annually with one action.",
+    format:"Single image", repurpose:["Carousel","Email"], mode:"Editorial", template:"Pricing", hbucket:"proof",
+    visual:"Editorial or dark-premium. The price treated with confidence, the guarantee always in frame. No fake urgency, no countdown.",
+    cta:"Book a profit audit → leak.cafe", metric:"DMs, bookings, link clicks",
+    hooks:["Not another subscription. A profit audit with a guarantee.","Send me three months of files. I’ll tell you what they say.","Five founding audits at $499. Then $999."]
+  },
+  {
+    id:"objection", campaign:"Straight Answers", keywords:["accountant","too small","already do","doubt","worth it","expensive","trust","sceptical","skeptical","myth","objection","not sure"],
+    objective:"Trust", awareness:"Product aware", emotion:"“Okay, that actually makes sense.”",
+    message:"Answer the real hesitation in public, plainly. Compliance looks backward for the tax office. Leak looks sideways, at your operations, for you.",
+    proof:"Different job, different tools. Small is the reason, not the exception. The guarantee carries the risk.",
+    format:"Carousel", repurpose:["Single image","LinkedIn"], mode:"Clean White", template:"Myth vs reality / FAQ", hbucket:"proof",
+    visual:"Clean-white myth-vs-reality split or FAQ. Conversational, two honest panels, the reframe as the takeaway.",
+    cta:"Ask us anything about the audit → DM or leak.cafe", metric:"Saves, DMs, thoughtful comments",
+    hooks:["“My accountant already does this.” They don’t, and they’d agree.","“We’re too small for an audit.” It’s the opposite.","“If I were losing money, I’d know.” You’d know a bad month. Not a slow drift."]
+  },
+  {
+    id:"proof", campaign:"The Proof", keywords:["report","sample","how it works","process","deliver","what you get","results","example","finding","review"],
+    objective:"Trust", awareness:"Solution aware", emotion:"“Oh, that’s what I actually get.”",
+    message:"This is what you actually receive. Not a dashboard to learn. A plain-English report: each leak named, sized annually, with one thing to do about it.",
+    proof:"Every finding is human-reviewed before it reaches you. Where a number can’t be verified, we say so. The sample is public.",
+    format:"Reel", repurpose:["Carousel","LinkedIn"], mode:"Dark Premium", template:"Photo cover / sample report", hbucket:"proof",
+    visual:"Dark-premium. The sample audit open on a laptop or printed on a cafe table, coffee in frame. Legibility beats beauty; the report must read.",
+    cta:"See a sample audit → leak.cafe", metric:"Link clicks to the sample, saves, DMs",
+    hooks:["This is what you actually receive.","Named. Sized. With one thing to do about it.","If you can email a few files, you can start."]
+  },
+  {
+    id:"seasonal", campaign:"Peak Trading", keywords:["christmas","holiday","father","mother","easter","footy","grand final","peak","weekend","busy day","event","season","rush"],
+    objective:"Awareness", awareness:"Problem aware", emotion:"“My big day isn’t my best day?”",
+    message:"A record trading day can be your worst margin day. Volume without a plan scales the leaks: extra staff, rushed prep, over-ordering.",
+    proof:"Takings are loud. Margin is quiet. The cafes that win the big days already know their numbers going in.",
+    format:"Reel", repurpose:["Story","Single image"], mode:"Deep Purple", template:"Statement / photo cover", hbucket:"owner",
+    visual:"Full weekend service shot wide, then the quiet contrast. Energy and volume, documentary, golden-hour or service-rush light.",
+    cta:"See a sample audit → leak.cafe", metric:"Saves, shares, seasonal bookings",
+    hooks:["A record trading day can be your worst margin day.","Full room. Do you know what it actually made?","The big weekend gets the attention. The quiet Tuesday sets the margin."]
+  }
+];
+
+const FALLBACK = PILLARS[0];
+
+function classify(idea){
+  const t = " " + idea.toLowerCase() + " ";
+  let best = null, bestScore = 0;
+  for (const p of PILLARS){
+    let score = 0;
+    for (const k of p.keywords){ if (t.includes(k)) score += (k.length > 6 ? 2 : 1); }
+    if (score > bestScore){ bestScore = score; best = p; }
+  }
+  return bestScore > 0 ? best : FALLBACK;
+}
+
+let lastPillar = null, rot = 0;
+function buildBrief(){
+  const idea = document.getElementById("idea").value.trim();
+  if (!idea){ document.getElementById("idea").focus(); return null; }
+  const p = classify(idea);
+  if (p !== lastPillar){ rot = 0; lastPillar = p; }
+  const goal = document.getElementById("goal").value || p.objective;
+  const format = document.getElementById("format").value || p.format;
+  const aware = document.getElementById("aware").value || p.awareness;
+  const hook = p.hooks[rot % p.hooks.length];
+  const alt = p.hooks[(rot + 1) % p.hooks.length];
+  const repurpose = [...new Set([p.format, ...p.repurpose])].filter(f => f !== format);
+  return { idea, p, goal, format, aware, hook, alt, repurpose,
+    hashtags: HASH[p.hbucket], time: TIME[format] || TIME["Carousel"] };
+}
+
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+function render(b){
+  const rep = b.repurpose.map(r=>`<span class="tag">${esc(r)}</span>`).join("");
+  const html = `
+  <div class="brief">
+    <div class="top">
+      <div class="k">${esc(b.p.campaign)} · brief</div>
+      <h2>${esc(b.idea.charAt(0).toUpperCase()+b.idea.slice(1))}</h2>
+      <div class="sub">Mapped to the ${esc(b.p.id)} pillar. Every field below is drawn from the Leak system.</div>
+    </div>
+    <div class="fields">
+      <div class="f"><div class="l">Campaign</div><div class="v">${esc(b.p.campaign)}</div></div>
+      <div class="f"><div class="l">Objective</div><div class="v"><b>${esc(b.goal)}</b></div></div>
+      <div class="f"><div class="l">Audience</div><div class="v">Independent cafe owner-operators, AU. Time-poor, margin-aware, allergic to being sold to.</div></div>
+      <div class="f"><div class="l">Customer awareness</div><div class="v">${esc(b.aware)}</div></div>
+      <div class="f"><div class="l">Emotion</div><div class="v">${esc(b.p.emotion)}</div></div>
+      <div class="f"><div class="l">Key message</div><div class="v">${esc(b.p.message)}</div></div>
+      <div class="f"><div class="l">Supporting proof</div><div class="v muted">${esc(b.p.proof)}</div></div>
+      <div class="f"><div class="l">Hook options</div><div class="v hooks"><div class="h">${esc(b.hook)}</div><div class="h">${esc(b.alt)}</div></div></div>
+      <div class="f"><div class="l">Primary format</div><div class="v">${esc(b.format)}</div></div>
+      <div class="f"><div class="l">Repurpose to</div><div class="v">${rep || '<span class="tag">Story</span>'}</div></div>
+      <div class="f"><div class="l">Visual direction</div><div class="v muted">${esc(b.p.visual)}</div></div>
+      <div class="f"><div class="l">CTA</div><div class="v"><b>${esc(b.p.cta)}</b></div></div>
+      <div class="f"><div class="l">Best time (AU)</div><div class="v muted">${esc(b.time)}</div></div>
+      <div class="f"><div class="l">Hashtags</div><div class="v muted" style="font-size:13px">${esc(b.hashtags)}</div></div>
+      <div class="f"><div class="l">Success metric</div><div class="v">${esc(b.p.metric)}</div></div>
+      <div class="f"><div class="l">Build it</div><div class="v"><div class="build">In the Studio, start from the <b>${esc(b.p.template)}</b> template in <b>${esc(b.p.mode)}</b> mode. One idea, big type, the lockup bottom-left. Then run the full workflow to finish it.</div></div></div>
+    </div>
+  </div>`;
+  const out = document.getElementById("out");
+  out.innerHTML = html;
+  out.style.display = "block";
+  out.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+let current = null;
+function run(){ const b = buildBrief(); if (b){ current = b; render(b); } }
+function another(){ if (!current){ run(); return; } rot++; run(); }
+
+function copyBrief(){
+  if (!current) return;
+  const b = current;
+  const lines = [
+    "LEAK CREATIVE BRIEF",
+    "Idea: " + b.idea,
+    "Campaign: " + b.p.campaign,
+    "Objective: " + b.goal,
+    "Audience: Independent cafe owner-operators, AU",
+    "Customer awareness: " + b.aware,
+    "Emotion: " + b.p.emotion,
+    "Key message: " + b.p.message,
+    "Supporting proof: " + b.p.proof,
+    "Hook: " + b.hook,
+    "Alt hook: " + b.alt,
+    "Primary format: " + b.format,
+    "Repurpose: " + b.repurpose.join(", "),
+    "Visual direction: " + b.p.visual,
+    "CTA: " + b.p.cta,
+    "Best time (AU): " + b.time,
+    "Hashtags: " + b.hashtags,
+    "Success metric: " + b.p.metric,
+    "Build: " + b.p.template + " template, " + b.p.mode + " mode"
+  ].join("\n");
+  navigator.clipboard.writeText(lines).then(()=>{
+    const btn = document.getElementById("copyBtn");
+    const old = btn.textContent; btn.textContent = "Copied";
+    setTimeout(()=>btn.textContent = old, 1400);
+  });
+}
+
+const EXAMPLES = ["a post about coffee prices","why my best seller might be losing money","the surcharge ban in October","my founder story","the free food cost checker","rostering on quiet days","what an audit actually delivers","is it worth it"];
+const ec = document.getElementById("examples");
+EXAMPLES.forEach(x=>{
+  const s = document.createElement("span");
+  s.textContent = x;
+  s.onclick = ()=>{ document.getElementById("idea").value = x; run(); };
+  ec.appendChild(s);
+});
+document.getElementById("idea").addEventListener("keydown", e=>{ if((e.metaKey||e.ctrlKey) && e.key==="Enter") run(); });
+</script>
+</body>
+</html>

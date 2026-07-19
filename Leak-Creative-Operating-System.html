@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leak · Creative Operating System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* The Leak palette: the single source of truth. */
+    --purple: #6D28D9;      /* brand. structure, not decoration */
+    --purple-dark: #5B21B6;
+    --purple-deep: #4C1D95;
+    --violet: #7C3AED;
+    --violet-light: #8B5CF6;
+    --lavender: #EDE9FE;
+    --lavender-soft: #F5F3FF;
+    --paper: #FAF9F7;        /* the world sits on paper, never on white */
+    --white: #FFFFFF;
+    --ink: #101418;          /* near-black, warm */
+    --charcoal: #1C2128;
+    --grey-600: #4B5563;
+    --grey-500: #6B7280;
+    --grey-400: #9CA3AF;
+    --grey-200: #E5E7EB;
+    --leak: #C2410C;         /* the one warm accent. it IS the leak. */
+    --line: #ECEAE6;
+
+    --shadow-card: 0 1px 2px rgb(28 33 40 / 0.04), 0 6px 20px rgb(28 33 40 / 0.05);
+    --shadow-lift: 0 4px 12px rgb(28 33 40 / 0.06), 0 18px 46px rgb(28 33 40 / 0.09);
+    --r-md: 14px; --r-lg: 20px; --r-xl: 26px;
+    --ease: cubic-bezier(0.21, 0.9, 0.35, 1);
+    --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
+
+  /* Typography scale: the real Leak scale. */
+  .kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey-400); }
+  h1.display { font-size: clamp(44px, 7vw, 88px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; margin: 0; }
+  h2.sec { font-size: clamp(30px, 4vw, 48px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.08; margin: 0 0 4px; }
+  h3 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 6px; }
+  h4 { font-size: 15px; font-weight: 700; margin: 0 0 6px; }
+  p { font-size: 16px; color: var(--grey-600); margin: 0 0 14px; max-width: 68ch; }
+  p.lead { font-size: 19px; color: var(--ink); font-weight: 500; }
+  strong { color: var(--ink); font-weight: 700; }
+  .mono { font-variant-numeric: tabular-nums; }
+  .accent { color: var(--purple); }
+  .dot { color: var(--purple); }
+
+  /* Cover */
+  .cover { min-height: 92vh; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(120% 130% at 0% 0%, #F1EDFC 0%, var(--paper) 60%); }
+  .cover .lockup { display: flex; align-items: center; gap: 14px; margin-bottom: 40px; }
+  .cover .word { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; }
+  .cover h1 { max-width: 16ch; }
+  .cover .sub { font-size: 20px; color: var(--grey-600); max-width: 52ch; margin-top: 22px; }
+  .cover .meta { margin-top: 44px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .tag { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--purple-dark); background: var(--lavender-soft); border-radius: 999px; padding: 7px 14px; }
+
+  /* Sections */
+  section { padding: 84px 0; border-top: 1px solid var(--line); }
+  .sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
+  .sec-num { font-size: 14px; font-weight: 800; color: var(--purple); font-variant-numeric: tabular-nums; }
+  .sec-intro { font-size: 19px; color: var(--grey-600); max-width: 70ch; margin: 10px 0 40px; }
+
+  /* Cards / grids */
+  .grid { display: grid; gap: 18px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 820px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } .wrap { padding: 0 22px; } }
+  .card { background: var(--white); border-radius: var(--r-lg); padding: 22px 24px; box-shadow: var(--shadow-card); }
+  .card.lift { box-shadow: var(--shadow-lift); }
+  .card h4 { color: var(--ink); }
+  .card p { font-size: 14.5px; margin-bottom: 0; }
+  .card .kicker { margin-bottom: 10px; }
+
+  .lawcard { border-radius: var(--r-lg); padding: 20px 22px; background: var(--white); box-shadow: var(--shadow-card); border-left: 3px solid var(--purple); }
+  .lawcard .n { font-size: 12px; font-weight: 800; color: var(--purple); letter-spacing: 0.05em; }
+  .lawcard h4 { margin: 6px 0 4px; font-size: 17px; }
+
+  /* Swatches */
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  @media (max-width: 820px) { .swatches { grid-template-columns: repeat(3, 1fr); } }
+  .sw { border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-card); background: var(--white); }
+  .sw .chip { height: 72px; }
+  .sw .lab { padding: 8px 10px; }
+  .sw .lab b { display: block; font-size: 12.5px; }
+  .sw .lab span { font-size: 11px; color: var(--grey-400); font-variant-numeric: tabular-nums; }
+  .sw .lab em { display: block; font-style: normal; font-size: 10.5px; color: var(--grey-500); margin-top: 2px; }
+
+  /* Type specimen */
+  .specimen { background: var(--white); border-radius: var(--r-xl); box-shadow: var(--shadow-card); padding: 32px 34px; }
+  .specimen .row { display: flex; align-items: baseline; gap: 18px; border-bottom: 1px solid var(--line); padding: 14px 0; }
+  .specimen .row:last-child { border-bottom: 0; }
+  .specimen .row .t { flex: 0 0 96px; font-size: 11px; color: var(--grey-400); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .specimen .row .s { line-height: 1.05; }
+
+  /* Mode chips */
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 820px) { .modes { grid-template-columns: repeat(2, 1fr); } }
+  .mode { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-card); }
+  .mode .canvas { aspect-ratio: 4 / 5; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+  .mode .canvas .k { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .mode .canvas .h { font-size: 21px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.1; }
+  .mode .canvas .rule { width: 34px; height: 4px; border-radius: 2px; }
+  .mode .name { background: var(--white); padding: 9px 12px; font-size: 12px; font-weight: 700; }
+  .mode .name span { color: var(--grey-400); font-weight: 500; }
+
+  /* Motif board */
+  .motifs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  @media (max-width: 820px) { .motifs { grid-template-columns: repeat(2, 1fr); } }
+  .motif { background: var(--white); border-radius: var(--r-md); box-shadow: var(--shadow-card); padding: 20px; text-align: center; }
+  .motif svg { height: 56px; }
+  .motif b { display: block; font-size: 12.5px; margin-top: 12px; }
+  .motif span { font-size: 11px; color: var(--grey-500); }
+
+  /* Anatomy diagram */
+  .anatomy { background: var(--lavender-soft); border-radius: var(--r-xl); padding: 20px; }
+  .anatomy .frame { background: var(--white); border-radius: var(--r-lg); box-shadow: var(--shadow-card); aspect-ratio: 4/5; max-width: 300px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .anatomy .z { border: 1px dashed var(--grey-200); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--grey-400); }
+
+  /* Checklist */
+  .check { background: var(--white); border-radius: var(--r-lg); box-shadow: var(--shadow-card); overflow: hidden; }
+  .check .item { display: grid; grid-template-columns: 130px 1fr; gap: 14px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+  .check .item:last-child { border-bottom: 0; }
+  .check .item .g { font-weight: 800; font-size: 14px; }
+  .check .item .pass { font-size: 13.5px; color: var(--grey-600); }
+  .check .item .fail { font-size: 12.5px; color: var(--leak); margin-top: 4px; }
+  .check .item .fail b { color: var(--leak); }
+
+  ul.clean { list-style: none; padding: 0; margin: 0; }
+  ul.clean li { position: relative; padding: 6px 0 6px 26px; font-size: 15px; color: var(--grey-600); }
+  ul.clean li::before { content: ""; position: absolute; left: 4px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: var(--purple); }
+  ul.clean li b { color: var(--ink); }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  @media (max-width: 820px) { .two { grid-template-columns: 1fr; gap: 22px; } }
+  .footer { padding: 60px 0 90px; color: var(--grey-400); font-size: 13px; }
+  .pillbar { display: inline-flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .pillbar span { font-size: 12px; font-weight: 600; color: var(--grey-600); background: var(--white); border-radius: 999px; padding: 5px 11px; box-shadow: var(--shadow-card); }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+  <div class="wrap">
+    <div class="lockup">
+      <svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-label="Leak mark">
+        <path d="M34.9 18.4 A15 15 0 1 0 31.4 34.8" stroke="url(#g)" stroke-width="6.5" stroke-linecap="round"/>
+        <circle cx="34.6" cy="27.2" r="4.7" fill="#5B21B6"/>
+        <defs><linearGradient id="g" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#8B5CF6"/><stop offset="0.5" stop-color="#7C3AED"/><stop offset="1" stop-color="#6D28D9"/>
+        </linearGradient></defs>
+      </svg>
+      <span class="word">Leak<span class="dot">.</span></span>
+    </div>
+    <p class="kicker" style="margin-bottom:18px">Creative Operating System · v1.0</p>
+    <h1 class="display">How Leak looks,<br>so it always looks like Leak.</h1>
+    <p class="sub">This is not a content plan. It is the foundation beneath every piece of content: the feeling, the design language, the templates, the rules and the guardrails that make a Leak graphic recognisable from across the room, with the logo covered.</p>
+    <div class="meta">
+      <span class="tag">The feeling</span>
+      <span class="tag">The design language</span>
+      <span class="tag">The templates</span>
+      <span class="tag">The rules</span>
+      <span class="tag">Built to scale to ten years</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1. CREATIVE VISION ============ -->
+<section id="vision">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><p class="kicker">Creative Vision</p></div>
+    <h2 class="sec">The feeling comes first.</h2>
+    <p class="sec-intro">Design is downstream of a feeling. Before a single frame is composed, we agree on the emotion it has to create. Every Leak post is engineered to leave one impression: <strong>someone competent finally understands my business, and they are calm about it.</strong></p>
+
+    <div class="two">
+      <div>
+        <h3>How an owner should feel</h3>
+        <ul class="clean">
+          <li><b>Steadier, not scared.</b> We never sell with anxiety. The feeling is relief, the way a good accountant telling you the truth kindly makes you feel, not the panic of a countdown timer.</li>
+          <li><b>Respected.</b> The reader is an intelligent operator who is time-poor, not a beginner. We assume competence and add clarity.</li>
+          <li><b>Seen.</b> "That is exactly my Monday." Recognition is our strongest emotion. It earns the save and the quiet screenshot to a business partner.</li>
+          <li><b>In good hands.</b> Premium, precise, unhurried. The design should feel like the inside of a very well-run café: nothing extra, everything considered.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>How owners should describe us</h3>
+        <p>If you overheard an owner describe Leak to another owner, these are the words we are designing for, and the words we are designing against.</p>
+        <div class="pillbar" style="margin-bottom:14px">
+          <span>Clear</span><span>Honest</span><span>Sharp</span><span>Calm</span><span>Premium</span><span>On my side</span><span>They know hospo</span>
+        </div>
+        <p class="kicker" style="margin-bottom:6px">Never</p>
+        <div class="pillbar">
+          <span style="color:var(--leak)">Cute</span><span style="color:var(--leak)">Salesy</span><span style="color:var(--leak)">Corporate</span><span style="color:var(--leak)">Busy</span><span style="color:var(--leak)">Loud</span><span style="color:var(--leak)">Gimmicky</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:44px">What makes us instantly recognisable</h3>
+    <p>Recognition is built from a small number of things repeated without exception. Cover the logo and a Leak graphic is still obvious because of these six signatures:</p>
+    <div class="grid g3" style="margin-top:6px">
+      <div class="card"><p class="kicker">Signature 01</p><h4>Purple on paper</h4><p>A warm off-white world with one deliberate purple. Never stark white, never a rainbow.</p></div>
+      <div class="card"><p class="kicker">Signature 02</p><h4>The dot</h4><p>The full stop after "Leak" in brand purple. Small, sacred, always present. Our full stop is our fingerprint.</p></div>
+      <div class="card"><p class="kicker">Signature 03</p><h4>One idea, huge</h4><p>A single message per frame, set in confident Plus Jakarta Sans with room to breathe.</p></div>
+      <div class="card"><p class="kicker">Signature 04</p><h4>The one warm leak</h4><p>A single burnt-orange accent, used like punctuation, standing for the leak itself. Never more than a trace.</p></div>
+      <div class="card"><p class="kicker">Signature 05</p><h4>Depth from light</h4><p>Soft, layered shadows instead of hard borders. Surfaces float on paper; nothing is boxed in.</p></div>
+      <div class="card"><p class="kicker">Signature 06</p><h4>Numbers that matter</h4><p>When a figure appears it is the hero: tabular, oversized, honest, and always sourced.</p></div>
+    </div>
+
+    <div class="card lift" style="margin-top:34px; background:var(--lavender-soft)">
+      <p class="kicker">The line that governs everything</p>
+      <p class="lead" style="margin-bottom:6px">Every Monday, know exactly where your profit leaked.</p>
+      <p style="margin-bottom:0">Clarity, on a cadence, delivered plainly. If a design does not serve that promise, it does not ship.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. DESIGN LANGUAGE ============ -->
+<section id="language">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><p class="kicker">Design Language</p></div>
+    <h2 class="sec">One system, no exceptions.</h2>
+    <p class="sec-intro">Every element below is drawn from the live product tokens, so a social graphic, the app and a sales deck are visibly the same company. Nothing here is decorative. Each choice earns its place by making the message clearer.</p>
+
+    <h3>Colour</h3>
+    <p>Paper dominates. Purple is structure, not decoration. The burnt-orange leak is punctuation, never a fill. A rough balance to hold in your eye: about <strong>70% paper and neutrals, 25% purple family, 5% ink, and a trace of leak-orange.</strong></p>
+    <div class="swatches" style="margin:16px 0 10px">
+      <div class="sw"><div class="chip" style="background:#FAF9F7;border-bottom:1px solid var(--line)"></div><div class="lab"><b>Paper</b><span>#FAF9F7</span><em>The world sits here</em></div></div>
+      <div class="sw"><div class="chip" style="background:#6D28D9"></div><div class="lab"><b>Brand purple</b><span>#6D28D9</span><em>Structure, accents</em></div></div>
+      <div class="sw"><div class="chip" style="background:#5B21B6"></div><div class="lab"><b>Purple dark</b><span>#5B21B6</span><em>The dot, depth</em></div></div>
+      <div class="sw"><div class="chip" style="background:#EDE9FE"></div><div class="lab"><b>Lavender</b><span>#EDE9FE</span><em>Panels, washes</em></div></div>
+      <div class="sw"><div class="chip" style="background:#101418"></div><div class="lab"><b>Ink</b><span>#101418</span><em>Primary type</em></div></div>
+      <div class="sw"><div class="chip" style="background:#C2410C"></div><div class="lab"><b>Leak</b><span>#C2410C</span><em>The accent. Rare.</em></div></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--grey-500)">Extended family for gradients and dark surfaces: violet #7C3AED, violet-light #8B5CF6, purple-deep #4C1D95, lavender-soft #F5F3FF, charcoal #1C2128. Three approved gradients only: the deep radial purple, the soft lavender-to-paper wash, and the near-black premium gradient. No other gradients are ever introduced.</p>
+
+    <h3 style="margin-top:40px">Typography</h3>
+    <p>One typeface, everywhere: <strong>Plus Jakarta Sans</strong>. No serif, ever, including the word "Leak". Type leads every layout; it is the design. Weights carry meaning: 800 for display and numbers, 700 for kickers and CTAs, 500 to 600 for body. Kickers are uppercase with 0.09em to 0.14em tracking in grey; headlines are tight (-0.02em) and confident.</p>
+    <div class="specimen" style="margin-top:14px">
+      <div class="row"><span class="t">Display 800</span><span class="s" style="font-size:44px;font-weight:800;letter-spacing:-0.03em">Busy doesn't mean profitable.</span></div>
+      <div class="row"><span class="t">Number 800</span><span class="s mono accent" style="font-size:52px;font-weight:800">$7,300</span></div>
+      <div class="row"><span class="t">Headline 800</span><span class="s" style="font-size:28px;font-weight:800;letter-spacing:-0.02em">Where your profit leaked</span></div>
+      <div class="row"><span class="t">Kicker 700</span><span class="s kicker" style="font-size:13px">Profit leak breakdown</span></div>
+      <div class="row"><span class="t">Body 500</span><span class="s" style="font-size:17px;font-weight:500;color:var(--grey-600)">Plain English, sized annually, with one thing to do about it.</span></div>
+    </div>
+    <p style="margin-top:12px;font-size:13.5px;color:var(--grey-500)">Canvas type scale (px on a 1080 artboard): 22, 26, 30, 36, 44, 54, 66, 80, 96, 120, 150. Pick from the scale; never invent an in-between size.</p>
+
+    <div class="two" style="margin-top:40px">
+      <div>
+        <h3>Spacing &amp; grid</h3>
+        <ul class="clean">
+          <li><b>8-point rhythm.</b> All spacing steps in multiples of 8. Generosity over density, always.</li>
+          <li><b>Artboard-relative.</b> Everything scales from the canvas width, so one layout holds at every format from a story to a billboard.</li>
+          <li><b>Safe margins are law.</b> Key copy never enters the platform UI zone or the outer safe band. Stories keep clear of the top and bottom chrome.</li>
+          <li><b>Left-aligned editorial.</b> The default is a strong left edge, like a well-set page. Centre only for single statements and quotes.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Negative space &amp; hierarchy</h3>
+        <ul class="clean">
+          <li><b>Whitespace is a feature, not a gap.</b> Aim to leave roughly 40% of any frame empty. Air signals confidence and premium.</li>
+          <li><b>One hero per frame.</b> A single element wins: the headline, or the number, or the photo. Everything else supports it and is visibly quieter.</li>
+          <li><b>Read in one path.</b> Kicker, then hero, then support, then the lockup. A viewer's eye should never have to choose where to start.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px">Cards, shapes &amp; depth</h3>
+    <p>Surfaces float on paper with soft, warm, layered shadows. We build depth from light, not from lines. Radii are fixed: 14px for small chips, 20px for cards, 26px for hero surfaces. Shapes are limited to rounded rectangles, pills, the accent rule, the ring and the dot. No hard 1px boxes in premium contexts, no drop-shadows that read as harsh, no strokes used decoratively.</p>
+    <div class="grid g3" style="margin-top:6px">
+      <div class="card"><h4>shadow-card</h4><p>The resting state. <span class="mono">0 1px 2px / 0 6px 20px</span> at 4 to 5% ink. Quiet lift off the paper.</p></div>
+      <div class="card lift"><h4>shadow-lift</h4><p>Hover and hero state. <span class="mono">0 4px 12px / 0 18px 46px</span> at 6 to 9%. Never heavier than this.</p></div>
+      <div class="card" style="background:var(--lavender-soft)"><h4>Panel fill</h4><p>Lavender-soft on light, or 10 to 14% white on dark. Panels group; they never cage.</p></div>
+    </div>
+
+    <h3 style="margin-top:40px">The six surfaces</h3>
+    <p>Every graphic is built on one of exactly six visual modes. They are moods, not new brands: same type, same dot, same rules. Choosing a mode is choosing a temperature, not reinventing the look.</p>
+    <div class="modes" style="margin-top:14px">
+      <div class="mode"><div class="canvas" style="background:#FFFFFF"><span class="k" style="color:#6D28D9">Clean white</span><span class="h" style="color:#101418">One idea, nothing competing.</span><span class="rule" style="background:#6D28D9"></span></div><div class="name">Clean White <span>· default, education</span></div></div>
+      <div class="mode"><div class="canvas" style="background:radial-gradient(120% 140% at 0% 0%,#5B21B6,#6D28D9 55%,#7C3AED)"><span class="k" style="color:#C4B5FD">Deep purple</span><span class="h" style="color:#fff">The bold statement.</span><span class="rule" style="background:#C4B5FD"></span></div><div class="name">Deep Purple <span>· statements</span></div></div>
+      <div class="mode"><div class="canvas" style="background:linear-gradient(135deg,#F1EDFC,#FAF9F7 70%,#fff)"><span class="k" style="color:#6D28D9">Soft gradient</span><span class="h" style="color:#101418">Warm, premium, calm.</span><span class="rule" style="background:#6D28D9"></span></div><div class="name">Soft Gradient <span>· heroes, tools</span></div></div>
+      <div class="mode"><div class="canvas" style="background:#FAF9F7"><span class="k" style="color:#5B21B6">Editorial</span><span class="h" style="color:#101418">Like a well-set page.</span><span class="rule" style="background:#5B21B6"></span></div><div class="name">Editorial <span>· founder, story</span></div></div>
+      <div class="mode"><div class="canvas" style="background:#FFFFFF"><span class="k" style="color:#6D28D9">Data-led</span><span class="h mono" style="color:#6D28D9;font-size:34px">36%</span><span class="rule" style="background:#6D28D9"></span></div><div class="name">Data-Led <span>· benchmarks</span></div></div>
+      <div class="mode"><div class="canvas" style="background:linear-gradient(160deg,#14101F,#1E1533 55%,#2A1A4A)"><span class="k" style="color:#8B5CF6">Dark premium</span><span class="h" style="color:#fff">Photography &amp; proof.</span><span class="rule" style="background:#8B5CF6"></span></div><div class="name">Dark Premium <span>· photo covers</span></div></div>
+    </div>
+
+    <h3 style="margin-top:40px">Graphic motifs</h3>
+    <p>A tiny, closed set of marks. These are the only decorative shapes Leak owns. Everything else is type, photo or data. We reach for a motif to <em>clarify</em>, never to fill space.</p>
+    <div class="motifs" style="margin-top:14px">
+      <div class="motif">
+        <svg viewBox="0 0 48 48" fill="none"><path d="M34.9 18.4 A15 15 0 1 0 31.4 34.8" stroke="#6D28D9" stroke-width="6.5" stroke-linecap="round"/><circle cx="34.6" cy="27.2" r="4.7" fill="#5B21B6"/></svg>
+        <b>The ring + dot</b><span>The mark. Never redrawn or recoloured off-palette.</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 48"><circle cx="30" cy="24" r="7" fill="#6D28D9"/></svg>
+        <b>The dot</b><span>The full stop. Punctuation and signature.</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 80 48" fill="none"><path d="M6 30 C 22 30, 26 16, 40 16 S 62 34, 74 22" stroke="#C2410C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <b>The drift line</b><span>The leak, drawn. Only ever in leak-orange.</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 80 48" fill="none"><rect x="8" y="22" width="42" height="6" rx="3" fill="#6D28D9"/></svg>
+        <b>The accent rule</b><span>96px x 8px underline beneath a hero line.</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 48 48" fill="none"><path d="M14 25 l7 7 l14 -16" stroke="#5B21B6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <b>The tick</b><span>Human-reviewed, verified, done. Restraint.</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px">Image treatment, illustration &amp; texture</h3>
+    <div class="two">
+      <div>
+        <ul class="clean">
+          <li><b>Photography is full-bleed.</b> Real photos fill the frame, corners rounded to 20 to 28px, with a bottom scrim so type stays legible over any image. See Part 04.</li>
+          <li><b>We do not illustrate.</b> No mascots, no spot illustrations, no stock vectors. If a concept needs explaining, we use a diagram built from our own shapes, or a photograph.</li>
+          <li><b>No texture.</b> The only texture is paper. No noise, no grain overlays, no patterns, no gradients beyond the three approved.</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="clean">
+          <li><b>Data is a first-class citizen.</b> Charts use the purple family on paper, tabular numerals, generous spacing, and a visible source line. A chart should be as beautiful as a headline.</li>
+          <li><b>Composition is editorial.</b> Strong left edge, big type, deliberate air. Centre-weight only statements, quotes and single numbers.</li>
+          <li><b>The dot is sacred.</b> It is never removed, recoloured off-palette, animated gratuitously, or replaced with an emoji.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. SOCIAL DESIGN SYSTEM ============ -->
+<section id="social">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><p class="kicker">Social Design System</p></div>
+    <h2 class="sec">Templates, not one-offs.</h2>
+    <p class="sec-intro">Nothing is designed from scratch. Every post is an instance of a template with a fixed anatomy, so a new post is a decision about content, never about layout. The shared anatomy is always the same four zones.</p>
+
+    <div class="grid g2" style="align-items:center">
+      <div class="anatomy">
+        <div class="frame">
+          <div class="z" style="flex:0 0 34px;background:var(--lavender-soft)">Kicker · what this is</div>
+          <div class="z" style="flex:1;background:var(--lavender-soft)">Hero · the one idea (type, number or photo)</div>
+          <div class="z" style="flex:0 0 44px;background:var(--lavender-soft)">Support · one line, optional</div>
+          <div class="z" style="flex:0 0 34px;background:var(--lavender-soft)">Lockup · mark + leak.cafe</div>
+        </div>
+      </div>
+      <div>
+        <h3>The universal anatomy</h3>
+        <ul class="clean">
+          <li><b>Kicker</b> (top): a small uppercase label naming the post type. Orientation in one glance.</li>
+          <li><b>Hero</b> (centre of gravity): the single message. This is 60 to 70% of the frame's attention.</li>
+          <li><b>Support</b> (optional): one quiet line that adds the lesson or the source.</li>
+          <li><b>Lockup</b> (bottom): the ring, the wordmark and leak.cafe. Always present, always the same position.</li>
+        </ul>
+        <p style="margin-top:10px">Every template below is this anatomy, tuned. They map directly to the modes and families already in the Studio, so "designed" and "buildable" are the same thing.</p>
+      </div>
+    </div>
+
+    <div class="grid g3" style="margin-top:34px">
+      <div class="card"><p class="kicker">Template</p><h4>Statement</h4><p>Deep-purple or editorial. One bold line, an accent rule, nothing competing. For truths and hooks.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Single image</h4><p>Dark-premium photo cover, full-bleed, bottom scrim, one line of type. The scroll-stopper.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Statistic</h4><p>Data-led. One oversized tabular number, a plain label, a source line. Never a number without a source.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Educational slide</h4><p>Clean-white carousel. Hook, one idea per slide, a "save this" close. Progress dots bottom-left.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Founder</h4><p>Editorial with a photo panel. Kicker "from the founder", a personal line, real portrait. Warmth over polish.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Feature launch</h4><p>Soft-gradient. Kicker "new", the feature named in one line, one benefit, one CTA. Calm, not shouty.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Customer story</h4><p>Editorial. Problem, finding, outcome, in three quiet beats. Results appear only when verified.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Case study</h4><p>Structured card: the problem, what the audit found, the sized opportunity, the action. Evidence-first.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Announcement</h4><p>Deep-purple. One sentence of news, one date or number, the dot. No confetti, no exclamation marks.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Comparison</h4><p>Myth vs reality split, clean-white. Two panels, honest framing, the reframe as the takeaway.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Quote</h4><p>Editorial, centre-weighted. An oversized opening mark, the line given room, attribution small.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Story (9:16)</h4><p>Any mode, tuned to vertical. Key copy inside the safe band, one CTA, a swipe or tap prompt.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>LinkedIn</h4><p>Square or portrait, restrained palette, denser type allowed, no emojis. Built for a professional feed.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Email graphic</h4><p>A single hero image or number card, 2:1 or square, that echoes the post but stands alone in an inbox.</p></div>
+      <div class="card"><p class="kicker">Template</p><h4>Presentation slide</h4><p>16:9 sibling of the deck master: one point per slide, the same type and lockup. Social and slides rhyme.</p></div>
+    </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--grey-500)">Rule for all fifteen: change the words and the photo, never the anatomy. If a post seems to need a new layout, the content is trying to do two jobs. Split it into two posts.</p>
+  </div>
+</section>
+
+<!-- ============ 4. PHOTOGRAPHY DIRECTION ============ -->
+<section id="photography">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><p class="kicker">Photography Direction</p></div>
+    <h2 class="sec">Documentary, never staged.</h2>
+    <p class="sec-intro">Leak's photography looks like a real café on a real morning, because our credibility is that we have actually stood behind the machine. Styled, stock-looking imagery quietly says the opposite. The house look: warm, natural, a little imperfect, always legible.</p>
+
+    <div class="two">
+      <div>
+        <h3>The house look</h3>
+        <ul class="clean">
+          <li><b>Lighting:</b> natural only. Light from the side or behind, soft and directional, ideally early morning. Flash is banned. Embrace a slightly moody, low-key frame over a flat, evenly-lit one.</li>
+          <li><b>Colour grade:</b> warm and true. Whites lean paper-warm, blacks lifted a touch, saturation held back. No teal-and-orange, no heavy filters, no fashion contrast. One consistent grade across every image.</li>
+          <li><b>Crop:</b> vertical 4:5 for feed, 9:16 for stories. Compose with the lower third kept calm so type and scrim sit cleanly.</li>
+          <li><b>Depth of field:</b> shallow for people and product (subject sharp, café soft), deeper for rooms so the space reads. Roughly f2 to f2.8 close, f4 to f5.6 wide.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>By subject</h3>
+        <ul class="clean">
+          <li><b>Hospitality &amp; rooms:</b> from behind the machine or over the pass. Steam, hands, movement. Blur is a feature, not a mistake.</li>
+          <li><b>Product &amp; food:</b> top-down on a working bench, real portions, honest plating. The trim and the waste are allowed in frame; that is the point.</li>
+          <li><b>People &amp; founder:</b> eye-level, chest to waist up, café soft behind. Warm and direct, never a corporate headshot. Mel looks at the lens, not past it.</li>
+          <li><b>Workspace &amp; documents:</b> invoices, rosters, the report on a laptop. Legibility beats beauty; crop or blur anything sensitive.</li>
+          <li><b>Behind the scenes:</b> the quiet before open, closing up alone, the delivery at the back door. The unglamorous truth of the trade.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:28px;background:var(--lavender-soft)">
+      <p class="kicker">Editing rules</p>
+      <p style="margin-bottom:0">One grade, applied consistently. Straighten and lightly crop, correct exposure and warmth, and stop. No skin smoothing, no sky replacement, no removing the mess that makes it real. If an image needs heavy retouching to work, it was the wrong frame. A slightly imperfect true photo always beats a perfect fake one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. MOTION DIRECTION ============ -->
+<section id="motion">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><p class="kicker">Motion Direction</p></div>
+    <h2 class="sec">Calm, editorial, considered.</h2>
+    <p class="sec-intro">Leak does not animate to entertain. Motion exists to help the eye understand order and to give one small, earned moment of delight. Content settles into place, as if it were always there. The feeling is a premium product easing open, never a banner demanding attention.</p>
+
+    <div class="two">
+      <div>
+        <h3>Principles</h3>
+        <ul class="clean">
+          <li><b>Settle, do not bounce.</b> Elements rise and fade into position on the house curve. The only permitted overshoot is a single number popping, once.</li>
+          <li><b>One moment of delight.</b> Per graphic, one thing may animate for feeling: the hero number counting up, or the health ring drawing. Never two.</li>
+          <li><b>Transform and opacity only.</b> We animate position and fade, nothing else. Layout space is reserved from the first frame, so there is zero layout shift, ever.</li>
+          <li><b>Respect the viewer.</b> Reduced-motion is honoured everywhere. When it is on, everything is simply present, instantly and correctly.</li>
+          <li><b>Never decorative.</b> No loops, no parallax, no spinning marks, no kinetic type for its own sake.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>The spec</h3>
+        <div class="card">
+          <ul class="clean" style="margin:0">
+            <li><b>House easing:</b> <span class="mono">cubic-bezier(0.21, 0.9, 0.35, 1)</span>. Confident, decelerating, calm.</li>
+            <li><b>Entrance (rise + fade):</b> 450ms, up 8 to 12px.</li>
+            <li><b>Micro-interactions:</b> 150ms. Hover lifts a card by 1 to 2px into shadow-lift.</li>
+            <li><b>The one delight:</b> count-up 1.3s, ring draw 1.4s, on <span class="mono">cubic-bezier(0.22, 0.61, 0.36, 1)</span>.</li>
+            <li><b>Overshoot (rare):</b> a number may use <span class="mono">cubic-bezier(0.34, 1.56, 0.64, 1)</span>, once.</li>
+            <li><b>Stagger:</b> 60 to 90ms between sequential items. Never more.</li>
+          </ul>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:var(--grey-500)">These are the live values from the product. A Reel, an app screen and a keynote build should all move with the same temperament.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. CREATIVE PRINCIPLES ============ -->
+<section id="principles">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><p class="kicker">Creative Principles</p></div>
+    <h2 class="sec">Ten laws. No exceptions.</h2>
+    <p class="sec-intro">When a decision is unclear, these settle it. They are deliberately strict, because consistency is built by what we refuse to do. If a principle and a clever idea disagree, the principle wins.</p>
+
+    <div class="grid g2" style="margin-top:6px">
+      <div class="lawcard"><span class="n">01</span><h4>One message per graphic.</h4><p>If it says two things, it says nothing. Split it.</p></div>
+      <div class="lawcard"><span class="n">02</span><h4>Whitespace is valuable.</h4><p>Air is not wasted space. It is the signal of a premium, confident brand. Leave the 40%.</p></div>
+      <div class="lawcard"><span class="n">03</span><h4>Typography leads.</h4><p>The words are the design. Set them beautifully and most graphics need nothing else.</p></div>
+      <div class="lawcard"><span class="n">04</span><h4>Data should be beautiful, and honest.</h4><p>Numbers are heroes: large, tabular, sourced. We never dress up a figure we cannot stand behind.</p></div>
+      <div class="lawcard"><span class="n">05</span><h4>Photography tells the truth.</h4><p>Real over styled, always. A true imperfect frame beats a perfect fake one.</p></div>
+      <div class="lawcard"><span class="n">06</span><h4>Depth from light, not lines.</h4><p>Soft shadows on paper. No hard boxes, no harsh strokes, no cages.</p></div>
+      <div class="lawcard"><span class="n">07</span><h4>One warm accent, used like punctuation.</h4><p>The leak-orange is a trace, never a fill. Restraint is the brand.</p></div>
+      <div class="lawcard"><span class="n">08</span><h4>The dot is sacred.</h4><p>Always present, always brand purple, never an emoji, never redrawn.</p></div>
+      <div class="lawcard"><span class="n">09</span><h4>Never manufacture urgency.</h4><p>No countdowns of anxiety, no false scarcity. Our only urgency is real: a date, or five founding spots.</p></div>
+      <div class="lawcard"><span class="n">10</span><h4>When in doubt, remove.</h4><p>Never decorate. Always simplify. The best Leak design is the one with nothing left to take away.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. BRAND GUARDIAN ============ -->
+<section id="guardian">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><p class="kicker">Brand Guardian</p></div>
+    <h2 class="sec">The pre-flight checklist.</h2>
+    <p class="sec-intro">Nothing publishes until it passes every line. If a piece fails one, it does not go out with an apology; it goes back. The "fails if" column is the fast way to catch the usual slips.</p>
+
+    <div class="check" style="margin-top:8px">
+      <div class="item"><div class="g">Brand consistency</div><div><div class="pass">Uses one of the six modes, Plus Jakarta Sans, the palette and the lockup, unchanged.</div><div class="fail"><b>Fails if:</b> a new colour, a second typeface, or a redrawn mark appears.</div></div></div>
+      <div class="item"><div class="g">Hierarchy</div><div><div class="pass">One clear hero. The eye knows exactly where to start and where to go next.</div><div class="fail"><b>Fails if:</b> two elements compete, or the reader has to hunt for the point.</div></div></div>
+      <div class="item"><div class="g">Typography</div><div><div class="pass">Sizes drawn from the scale, tight display tracking, kicker in grey uppercase. No serif anywhere.</div><div class="fail"><b>Fails if:</b> an off-scale size, a stray font, or centre-set body copy slips in.</div></div></div>
+      <div class="item"><div class="g">Colour</div><div><div class="pass">Paper-dominant, purple as structure, leak-orange only as a trace.</div><div class="fail"><b>Fails if:</b> orange is used as a fill, or the frame is stark white with no paper warmth.</div></div></div>
+      <div class="item"><div class="g">Spacing</div><div><div class="pass">8-point rhythm, safe margins respected, roughly 40% of the frame left as air.</div><div class="fail"><b>Fails if:</b> copy touches the edges, crowds the UI zone, or the frame feels dense.</div></div></div>
+      <div class="item"><div class="g">Messaging</div><div><div class="pass">One message, in plain operator English, true to "know where your profit leaked".</div><div class="fail"><b>Fails if:</b> it says two things, uses jargon, or drifts into hype.</div></div></div>
+      <div class="item"><div class="g">Trust</div><div><div class="pass">Every figure is sourced or clearly illustrative. The guarantee is stated correctly. No fake urgency.</div><div class="fail"><b>Fails if:</b> an unverified number, a client-result claim, or a manufactured deadline appears.</div></div></div>
+      <div class="item"><div class="g">Education</div><div><div class="pass">The reader leaves with something useful, even if they never buy.</div><div class="fail"><b>Fails if:</b> it only sells, and teaches nothing.</div></div></div>
+      <div class="item"><div class="g">Originality</div><div><div class="pass">It could only be Leak. Cover the logo and it is still ours.</div><div class="fail"><b>Fails if:</b> it looks like a generic template, a trend copy, or any other brand.</div></div></div>
+      <div class="item"><div class="g">Professionalism</div><div><div class="pass">Considered, calm, premium. No emojis in the graphic, no em dashes, no clutter.</div><div class="fail"><b>Fails if:</b> it feels rushed, cute, cluttered or loud.</div></div></div>
+    </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--grey-500)">One question closes the review: if this ran on a billboard beside Stripe, Notion and Linear, would it hold its own? If not, it is not finished.</p>
+  </div>
+</section>
+
+<!-- ============ 8. BUILD FOR SCALE ============ -->
+<section id="scale">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">08</span><p class="kicker">Build For Scale</p></div>
+    <h2 class="sec">The same brand, ten years out.</h2>
+    <p class="sec-intro">This system is defined by constraints, not by a folder of assets, which is exactly what lets it scale. Anyone, on any surface, produces on-brand Leak work by holding to the same few things: Plus Jakarta Sans, purple on paper, the ring and the dot, one idea, big type, generous air, motion that settles. Below is how the language extends as Leak grows.</p>
+
+    <div class="grid g3" style="margin-top:6px">
+      <div class="card"><p class="kicker">Channel</p><h4>Podcast</h4><p>Cover art in soft-gradient with the mark and one title line. Audiograms use the drawing waveform in purple on paper; episode titles set like our statement template.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>YouTube</h4><p>A thumbnail system: one face or one number, four to six words of ink type, the dot bottom-right. Lower-thirds and end cards reuse the lockup and the house motion.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>Events &amp; conferences</h4><p>Banners and booths are mostly paper and air with one huge line. Name badges, lanyards and signage share the kicker-and-lockup system. Restraint reads as premium at scale.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>Sales presentations</h4><p>A deck master: one point per slide, the six modes as slide themes, the metric-hero for numbers. A deck should feel like the feed, stretched to 16:9.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>Ads</h4><p>Static ads are the statement or statistic templates with a single CTA. Video ads open on the hook in two seconds and move with house motion. Never louder than the organic feed, just tighter.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>Billboards</h4><p>The purest test of the system: one line, or one number, and the dot. If it needs more than that to work, it is not a Leak billboard.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>Investor decks</h4><p>Data-led mode throughout. Numbers as heroes, always sourced, charts in the purple family. Confidence through clarity, not through gloss.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>Product launches</h4><p>The announcement and feature-launch templates, scaled across email, in-app, social and a landing hero, all sharing one line and one mark.</p></div>
+      <div class="card"><p class="kicker">Channel</p><h4>The through-line</h4><p>Every surface answers one question the same way: does it feel calm, clear, premium and unmistakably Leak? If yes, it belongs. If no, it does not ship.</p></div>
+    </div>
+
+    <div class="card lift" style="margin-top:34px; background:var(--lavender-soft)">
+      <p class="kicker">The ten-year rule</p>
+      <p class="lead" style="margin-bottom:6px">Protect consistency above all else.</p>
+      <p style="margin-bottom:0">Trends will change. The mark, the typeface, the palette and these principles do not. When a new surface, format or platform appears, we do not invent a new look for it. We ask what the Leak version is, and we build that. The goal is simple and permanent: a decade from now, a stranger should see a single frame and know, before they read a word, that it is Leak.</p>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  <div class="wrap">
+    <div class="lockup" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M34.9 18.4 A15 15 0 1 0 31.4 34.8" stroke="#6D28D9" stroke-width="6.5" stroke-linecap="round"/><circle cx="34.6" cy="27.2" r="4.7" fill="#5B21B6"/></svg>
+      <span style="font-weight:800;font-size:17px">Leak<span style="color:#6D28D9">.</span></span>
+    </div>
+    Creative Operating System · v1.0 · The foundation beneath every piece of Leak content. Pair with the Production Playbook (what we post) and the Studio (where we build it).
+  </div>
+</div>
+
+</body>
+</html>
